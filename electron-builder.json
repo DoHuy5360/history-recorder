@@ -2,6 +2,7 @@
     "appId": "com.do_huy.template",
     "files": ["dist-electron", "dist-react"],
     "icon": "./desktopIcon.png",
+    "extraResources": ["dist-electron/preload.cjs"],
     "mac" : {
         "target": "dmg"
     },
