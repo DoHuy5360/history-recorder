@@ -1,35 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
 
 function App() {
-  // @ts-ignore
-  window.electron.de((data)=>{
-    console.log(data);
-  })
-  const [count, setCount] = useState(0)
+	const [dataList, setDataList] = useState<Data[]>([]);
+	useEffect(() => {
+		window.electron.receive((dataFromServer: any) => {
+			setDataList(dataFromServer);
+		});
+	}, []);
 
-  return (
-    <>
-      <div>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React + Electron</h1>
-      <div className="card">
-        <button>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+	return (
+		<div>
+			<ul>
+				{dataList.map((data: any, index: number) => {
+					return <li key={index}>{data.id}</li>;
+				})}
+			</ul>
+			<button
+				onClick={async () => {
+					setDataList([...dataList, await window.electron.fetch()]);
+				}}
+				type="button">
+				Fetch
+			</button>
+		</div>
+	);
 }
 
-export default App
+export default App;
