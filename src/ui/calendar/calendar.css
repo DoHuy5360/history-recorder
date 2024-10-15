@@ -1,0 +1,6 @@
+.table_border_style{
+    border-style: solid none none solid;
+}
+.cell_border_style{
+    border-style: none solid solid none;
+}
