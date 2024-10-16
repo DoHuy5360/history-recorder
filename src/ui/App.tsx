@@ -3,17 +3,17 @@ import "./App.css";
 import View from "./calendar/View";
 
 function App() {
-	const [dataList, setDataList] = useState<Data[]>([]);
-	useEffect(() => {
-		window.electron.receive((dataFromServer: any) => {
-			setDataList(dataFromServer);
-		});
-	}, []);
+	// const [dataList, setDataList] = useState<Data[]>([]);
+	// useEffect(() => {
+	// 	window.electron.receive((dataFromServer: any) => {
+	// 		setDataList(dataFromServer);
+	// 	});
+	// }, []);
 
 	return (
 		<div>
 			<View />
-			<ul>
+			{/* <ul>
 				{dataList.map((data: any, index: number) => {
 					return <li key={index}>{data.id}</li>;
 				})}
@@ -25,7 +25,7 @@ function App() {
 				}}
 				type="button">
 				Fetch
-			</button>
+			</button> */}
 		</div>
 	);
 }

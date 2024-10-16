@@ -4,3 +4,11 @@
 .cell_border_style{
     border-style: none solid solid none;
 }
+
+table, th, td{
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td{
+    padding: 5px 10px;
+}
