@@ -1,8 +1,10 @@
 .table_border_style{
     border-style: solid none none solid;
+    border-width: 1px;
 }
 .cell_border_style{
     border-style: none solid solid none;
+    border-width: 1px;
 }
 
 table, th, td{
@@ -11,4 +13,7 @@ table, th, td{
 }
 th, td{
     padding: 5px 10px;
+}
+.cell_month_name{
+    grid-column: 1 / -1;
 }

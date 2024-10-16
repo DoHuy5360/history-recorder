@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import View from "./calendar/View";
+import View from "./calendar/Calendar";
 
 function App() {
 	// const [dataList, setDataList] = useState<Data[]>([]);
