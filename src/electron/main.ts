@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, screen } from "electron";
 import path from "path";
 import { isDev } from "./util.js";
 import { getPreloadPath } from "./pathResolver.js";
@@ -13,9 +13,7 @@ app.on("ready", async () => {
 		mainWin.webContents.openDevTools();
 		await mainWin.loadURL("http://localhost:3000");
 	} else {
-		await mainWin.loadFile(
-			path.join(app.getAppPath(), "/dist-react/index.html"),
-		);
+		await mainWin.loadFile(path.join(app.getAppPath(), "/dist-react/index.html"));
 	}
 	mainWin.webContents.send("receive", [{ id: 1 }, { id: 2 }]);
 
@@ -24,7 +22,4 @@ app.on("ready", async () => {
 			id: 3,
 		};
 	});
-
-	// setInterval(() => {
-	// }, 3000);
 });

@@ -52,6 +52,7 @@ const histories: History = {
 		],
 	},
 };
+const dayInWeek = moment(`${currentYear}-${currentMonth}-01`);
 
 function View() {
 	const [startDate, setStartDate] = useState<number | null>(null);
@@ -106,28 +107,38 @@ function View() {
 					<div>{currentYear}</div>
 				</div>
 			</div>
-			<div className="table_border_style grid grid-cols-7 m-4 wrap_body_cell">
-				<div className="p-2 cell_month_name cell_border_style">{currentMonthName}</div>
-				<div className="p-2 bg-slate-100 cell_border_style">T2</div>
-				<div className="p-2 bg-slate-100 cell_border_style">T3</div>
-				<div className="p-2 bg-slate-100 cell_border_style">T4</div>
-				<div className="p-2 bg-slate-100 cell_border_style">T5</div>
-				<div className="p-2 bg-slate-100 cell_border_style">T6</div>
-				<div className="p-2 bg-slate-100 cell_border_style">T7</div>
-				<div className="p-2 bg-slate-100 cell_border_style">CN</div>
+			<div className="grid grid-cols-7 gap-[1px] m-4 bg-slate-100 border-slate-100 border-[1px]">
+				<div className="p-2 cell_month_name">{currentMonthName}</div>
+				<div className="p-2 bg-slate-50">T2</div>
+				<div className="p-2 bg-slate-50">T3</div>
+				<div className="p-2 bg-slate-50">T4</div>
+				<div className="p-2 bg-slate-50">T5</div>
+				<div className="p-2 bg-slate-50">T6</div>
+				<div className="p-2 bg-slate-50">T7</div>
+				<div className="p-2 bg-slate-50">CN</div>
 				{arrayOfDays.map((day: number, index) => {
 					const time: Time = histories[day as keyof History];
+					const date = moment(`${currentYear}-${currentMonth}-${day}`);
+					const dayInWeek = date.day();
 					const isToday = day === currentDay;
+					const isSunday = dayInWeek === 0;
 					return (
-						<div key={index} className="">
-							<div
-								onClick={() => {
-									handleSelectDays(day);
-								}}
-								className={`${isToday && ""}
-								${startDate && startDate === day && "bg-green-200"}
-								${endDate && endDate === day && "bg-blue-200"}
-								${startDate && endDate && day > startDate && day < endDate && "bg-yellow-200"} h-full p-2 select-none cell_border_style`}>
+						<div
+							key={index}
+							className={`${isToday && ""}
+							${
+								startDate && endDate && day > startDate && day < endDate ? "bg-yellow-200" : day !== startDate && day !== endDate && "bg-white"
+							} h-full p-2 select-non outline outline-0 outline-blue-300 hover:outline-1 cursor-pointer
+							${startDate && startDate === day && "bg-green-200"}
+							${endDate && endDate === day && "bg-blue-200"}
+							`}
+							style={{
+								gridColumn: dayInWeek,
+							}}
+							onClick={() => {
+								handleSelectDays(day);
+							}}>
+							<div className={`${isSunday && "sunday"}`}>
 								<div className="flex justify-between items-center">
 									<div>{day}</div>
 									{isToday && (
@@ -136,7 +147,12 @@ function View() {
 										</div>
 									)}
 								</div>
-								{time && <div className="bg-red-500 w-fit px-2 py-1 rounded-full grid items-center text-white text-xs font-bold ml-auto">{time.tasks.length}</div>}
+								<div
+									className={`
+									${time && "grid items-center text-red-500 font-bold"} w-fit px-2 py-1 ml-auto
+									`}>
+									{time ? time.tasks.length : "\u200b"}
+								</div>
 							</div>
 						</div>
 					);
