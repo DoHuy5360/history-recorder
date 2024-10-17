@@ -1,10 +1,20 @@
-import { app, BrowserWindow, ipcMain, screen } from "electron";
+import { app, BrowserWindow, ipcMain, Menu, screen, Tray } from "electron";
 import path from "path";
-import { isDev } from "./util.js";
+import { isDev, isMac } from "./util.js";
 import { getPreloadPath } from "./pathResolver.js";
 
+let forceClose = false;
+
 app.on("ready", async () => {
+	const WINDOW_WIDTH = 1000;
+	const WINDOW_HEIGHT = 800;
 	const mainWin = new BrowserWindow({
+		width: WINDOW_WIDTH,
+		height: WINDOW_HEIGHT,
+		// frame: true, // Hide window frame
+		// alwaysOnTop: false,
+		// transparent: true,
+		// resizable: true,
 		webPreferences: {
 			preload: getPreloadPath("/preload.cjs"),
 		},
@@ -15,6 +25,13 @@ app.on("ready", async () => {
 	} else {
 		await mainWin.loadFile(path.join(app.getAppPath(), "/dist-react/index.html"));
 	}
+	mainWin.on("close", (e) => {
+		if (forceClose === false) {
+			e.preventDefault();
+			mainWin.hide();
+		}
+	});
+
 	mainWin.webContents.send("receive", [{ id: 1 }, { id: 2 }]);
 
 	ipcMain.handle("fetch", () => {
@@ -22,37 +39,45 @@ app.on("ready", async () => {
 			id: 3,
 		};
 	});
-	ipcMain.on("popup:open", () => {
-		createPopupWindow();
+	ipcMain.on("frame:grow", () => {
+		const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+		mainWin.setSize(width, height, true);
+		mainWin.setPosition(0, 0, true);
 	});
+	ipcMain.on("frame:shrink", () => {
+		mainWin.setSize(WINDOW_WIDTH, WINDOW_HEIGHT, true);
+	});
+
+	createTray(mainWin);
 });
-let popupWindow: BrowserWindow | null;
-async function createPopupWindow() {
-	const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+function createTray(mainWindow: BrowserWindow) {
+	const tray = new Tray(path.join(app.getAppPath(), "/src/ui/media/favicon.ico"));
 
-	const WINDOW_WIDTH = 600;
-	const WINDOW_HEIGHT = 400;
-	const WINDOW_MARGIN = 10;
-
-	popupWindow = new BrowserWindow({
-		width: WINDOW_WIDTH,
-		height: WINDOW_HEIGHT,
-		x: width - (WINDOW_WIDTH + WINDOW_MARGIN),
-		y: height - (WINDOW_HEIGHT + WINDOW_MARGIN),
-		frame: true, // Hide window frame
-		alwaysOnTop: true,
-		transparent: true,
-		resizable: false,
-		webPreferences: {
-			// nodeIntegration: true, // allow to use node functions in browser directly
-			contextIsolation: true, // opposite to nodeIntegration, required for using global api communicate ipc
-			// preload: path.join(__dirname, "de.js"),
+	const contextMenu = Menu.buildFromTemplate([
+		{
+			label: "Open app",
+			click: () => {
+				mainWindow.show();
+			},
 		},
+		{
+			label: "Quit app",
+			click: () => {
+				forceClose = true;
+				mainWindow.close();
+				app.quit();
+			},
+		},
+	]);
+
+	tray.setToolTip("To do list");
+	tray.setContextMenu(contextMenu);
+
+	tray.on("double-click", () => {
+		mainWindow.show();
 	});
-	if (isDev) {
-		popupWindow.webContents.openDevTools();
-		await popupWindow.loadURL("http://localhost:3000/de");
-	} else {
-		await popupWindow.loadFile(path.join(app.getAppPath(), "/dist-react/index.html"));
-	}
 }
+
+app.on("window-all-closed", () => {
+	if (isMac) app.quit();
+});

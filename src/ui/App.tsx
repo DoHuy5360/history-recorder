@@ -1,8 +1,6 @@
-import { useState } from "react";
 import "./App.css";
 import Calendar from "./calendar/Calendar";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Popup from "./popup/Popup";
 
 function App() {
 	// const [dataList, setDataList] = useState<Data[]>([]);
@@ -16,7 +14,6 @@ function App() {
 			<Router>
 				<Routes>
 					<Route path="/" element={<Calendar />} />
-					<Route path="/de" element={<Popup />} />
 				</Routes>
 			</Router>
 

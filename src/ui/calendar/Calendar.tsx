@@ -3,6 +3,9 @@ import "./calendar.css";
 import moment from "moment";
 import { BiSolidFlag } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import { FaPlus } from "react-icons/fa";
+import { IoClose, IoCloseOutline } from "react-icons/io5";
+import { FcCloseUpMode } from "react-icons/fc";
 
 const currentMonth = moment().month() + 1;
 const currentMonthName = moment().format("MMMM");
@@ -56,7 +59,7 @@ const histories: History = {
 const dayInWeek = moment(`${currentYear}-${currentMonth}-01`);
 
 function View() {
-	const [startDate, setStartDate] = useState<number | null>(null);
+	const [startDate, setStartDate] = useState<number | null>(currentDay);
 	const [endDate, setEndDate] = useState<number | null>(null);
 	const handleSelectDays = useCallback(
 		(selectedDay: number) => {
@@ -89,45 +92,38 @@ function View() {
 		},
 		[startDate, endDate],
 	);
+	const [isShowAddTaskForm, setShowAddTaskForm] = useState(false);
 	const [isShowStatusColumn, setShowStatusColumn] = useState(true);
+	const [dayAddedTask, setDayAddedTask] = useState<number | null>(null);
 	let numberOfTasksSelected = 0;
 	let numberOfSelectedDaysHasTask = 0;
 
-	const [url, setUrl] = useState(document.location.href);
 	return (
 		<div>
-			<div className="p-3 w-full">
-				<input
-					type="text"
-					value={url}
-					className="border-[1px] border-slate-300 px-1 w-full"
-					onChange={(e) => {
-						setUrl(e.target.value);
+			<nav className="flex gap-2 mx-4">
+				<Link to="/">/calendar</Link>
+			</nav>
+			<div className="flex mx-4">
+				<button
+					className="flex bg-slate-200 rounded-sm px-2"
+					onClick={async () => {
+						// @ts-ignore
+						window.frame.shrink();
 					}}
-					onKeyDown={(e) => {
-						console.log(e.key === "Enter");
-						if (e.key === "Enter") {
-							if (document.location.href.trim() !== url) {
-								document.location.href = url;
-							}
-						}
+					type="button">
+					Shrink
+				</button>
+				<button
+					className="flex bg-slate-200 rounded-sm px-2"
+					onClick={async () => {
+						// @ts-ignore
+						window.frame.grow();
 					}}
-				/>
+					type="button">
+					Grow
+				</button>
 			</div>
-			{/* <nav className="flex gap-2">
-				<Link to="/">Calendar</Link>
-				<Link to="/de">De</Link>
-			</nav> */}
-			<button
-				className="flex bg-slate-200 rounded-sm p-2"
-				onClick={async () => {
-					// @ts-ignore
-					window.popup.open();
-				}}
-				type="button">
-				Fetch
-			</button>
-			<div className="flex gap-2 px-4">
+			<div className="flex gap-2 mx-4">
 				<div className="flex gap-1">
 					<div>Day: </div>
 					<div>{currentDay}</div>
@@ -174,24 +170,81 @@ function View() {
 							}}>
 							<div className={`${isSunday && "sunday"}`}>
 								<div className="flex justify-between items-center">
-									<div>{day}</div>
+									<div>
+										{day} - <FcCloseUpMode />
+									</div>
 									{isToday && (
 										<div className="text-red-500 h-fit">
 											<BiSolidFlag />
 										</div>
 									)}
 								</div>
-								<div
-									className={`
-									${time && "grid items-center text-red-500 font-bold"} w-fit px-2 py-1 ml-auto
-									`}>
-									{time ? time.tasks.length : "\u200b"}
+								<div className="flex">
+									<div
+										className={`
+										${time && "grid items-center text-red-500 font-bold"} w-fit px-2 py-1 ml-auto
+										`}>
+										{time ? time.tasks.length : "\u200b"}
+									</div>
+									<div
+										className="grid items-center w-fit text-transparent hover:text-slate-500"
+										onClick={(e) => {
+											e.stopPropagation();
+											setShowAddTaskForm(true);
+											setDayAddedTask(day);
+										}}>
+										<FaPlus />
+									</div>
 								</div>
 							</div>
 						</div>
 					);
 				})}
 			</div>
+
+			{isShowAddTaskForm && (
+				<div className="flex flex-col border-[1px] border-black">
+					<div className="flex gap-3 items-center bg-slate-200 w-fit px-2 py-1 select-none">
+						<span>
+							{dayAddedTask}/{currentMonth}/{currentYear}
+						</span>
+						<button
+							type="button"
+							className="w-fit text-slate-400 hover:text-slate-500 rotate-45"
+							onClick={() => {
+								setShowAddTaskForm(false);
+							}}>
+							<FaPlus />
+						</button>
+					</div>
+					<textarea
+						className="resize-none min-h-20 overflow-hidden border-[1px] p-2"
+						onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
+							e.currentTarget.style.height = "5px";
+							e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+						}}></textarea>
+					<div className="flex gap-2 items-center">
+						<label htmlFor="">Category</label>
+						<select className="border-[1px] bg-slate-100">
+							<option value="">Coding</option>
+							<option value="">Writing</option>
+						</select>
+					</div>
+					<button
+						type="button"
+						className="bg-green-300 w-fit px-2 py-1 ml-auto"
+						onClick={async () => {
+							// @ts-ignore
+							const acknowledged = await window.task.save(task_input.value);
+							if (acknowledged) {
+								alert("success");
+							}
+						}}>
+						Submit
+					</button>
+				</div>
+			)}
+
 			<div className="flex">
 				<div className="flex">
 					<label htmlFor="">From</label>
@@ -206,7 +259,6 @@ function View() {
 					&#160;day(s) selected
 				</div>
 			</div>
-
 			<div className="flex gap-1">
 				<label htmlFor="">Show status</label>
 				<input
