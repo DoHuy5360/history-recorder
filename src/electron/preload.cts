@@ -8,3 +8,9 @@ contextBridge.exposeInMainWorld("electron", {
 	},
 	fetch: () => ipcRenderer.invoke("fetch"),
 } satisfies Window["electron"]);
+
+contextBridge.exposeInMainWorld("popup", {
+	open: () => {
+		ipcRenderer.send("popup:open");
+	},
+});

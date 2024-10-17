@@ -2,6 +2,7 @@ import { useCallback, useState, Fragment, useRef } from "react";
 import "./calendar.css";
 import moment from "moment";
 import { BiSolidFlag } from "react-icons/bi";
+import { Link } from "react-router-dom";
 
 const currentMonth = moment().month() + 1;
 const currentMonthName = moment().format("MMMM");
@@ -91,8 +92,41 @@ function View() {
 	const [isShowStatusColumn, setShowStatusColumn] = useState(true);
 	let numberOfTasksSelected = 0;
 	let numberOfSelectedDaysHasTask = 0;
+
+	const [url, setUrl] = useState(document.location.href);
 	return (
 		<div>
+			<div className="p-3 w-full">
+				<input
+					type="text"
+					value={url}
+					className="border-[1px] border-slate-300 px-1 w-full"
+					onChange={(e) => {
+						setUrl(e.target.value);
+					}}
+					onKeyDown={(e) => {
+						console.log(e.key === "Enter");
+						if (e.key === "Enter") {
+							if (document.location.href.trim() !== url) {
+								document.location.href = url;
+							}
+						}
+					}}
+				/>
+			</div>
+			{/* <nav className="flex gap-2">
+				<Link to="/">Calendar</Link>
+				<Link to="/de">De</Link>
+			</nav> */}
+			<button
+				className="flex bg-slate-200 rounded-sm p-2"
+				onClick={async () => {
+					// @ts-ignore
+					window.popup.open();
+				}}
+				type="button">
+				Fetch
+			</button>
 			<div className="flex gap-2 px-4">
 				<div className="flex gap-1">
 					<div>Day: </div>
@@ -118,7 +152,7 @@ function View() {
 				<div className="p-2 bg-slate-50">CN</div>
 				{arrayOfDays.map((day: number, index) => {
 					const time: Time = histories[day as keyof History];
-					const date = moment(`${currentYear}-${currentMonth}-${day}`);
+					const date = moment(`${currentYear}-${currentMonth}-${day < 10 ? `0${day}` : day}`);
 					const dayInWeek = date.day();
 					const isToday = day === currentDay;
 					const isSunday = dayInWeek === 0;
