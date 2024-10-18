@@ -93,6 +93,7 @@ function View() {
 		[startDate, endDate],
 	);
 	const [isShowAddTaskForm, setShowAddTaskForm] = useState(false);
+	const [addingTaskTime, setAddingTaskTime] = useState("");
 	const [isShowStatusColumn, setShowStatusColumn] = useState(true);
 	const [dayAddedTask, setDayAddedTask] = useState<number | null>(null);
 	let numberOfTasksSelected = 0;
@@ -192,6 +193,7 @@ function View() {
 											e.stopPropagation();
 											setShowAddTaskForm(true);
 											setDayAddedTask(day);
+											setAddingTaskTime(moment().format("HH:mm:ss"));
 										}}>
 										<FaPlus />
 									</div>
@@ -217,6 +219,7 @@ function View() {
 							<FaPlus />
 						</button>
 					</div>
+					<div>{addingTaskTime}</div>
 					<textarea
 						className="resize-none min-h-20 overflow-hidden border-[1px] p-2"
 						onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
