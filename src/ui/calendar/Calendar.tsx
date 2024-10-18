@@ -1,10 +1,9 @@
-import { useCallback, useState, Fragment, useRef } from "react";
+import { useCallback, useState, Fragment, useEffect } from "react";
 import "./calendar.css";
 import moment from "moment";
 import { BiSolidFlag } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
-import { IoClose, IoCloseOutline } from "react-icons/io5";
 import { FcCloseUpMode } from "react-icons/fc";
 
 const currentMonth = moment().month() + 1;
@@ -13,52 +12,19 @@ const currentDay = moment().date();
 const daysInMonth = moment().daysInMonth();
 const currentYear = moment().year();
 const arrayOfDays = Array.from({ length: daysInMonth }, (v, k) => ++k);
-type History = {
-	[Key: number]: Time;
-};
-type Task = {
-	id: string;
-	name: string;
-	project: string;
-	status: string;
-};
-type Time = {
-	day: number;
-	month: number;
-	year: number;
-	tasks: Task[];
-};
-const histories: History = {
-	1: {
-		day: 1,
-		month: 9,
-		year: 2024,
-		tasks: [
-			{ id: "t1", project: "GVTG", name: "Sửa lỗi GVTG", status: "Done" },
-			{ id: "t2", project: "GVTG", name: "Task 2", status: "Done" },
-			{ id: "t2", project: "GVTG", name: "Task 2", status: "Done" },
-			{ id: "t2", project: "GVTG", name: "Task 2", status: "Done" },
-		],
-	},
-	2: {
-		day: 2,
-		month: 9,
-		year: 2024,
-		tasks: [{ id: "t3", project: "GVTG", name: "Task 3", status: "Done" }],
-	},
-	3: {
-		day: 3,
-		month: 9,
-		year: 2024,
-		tasks: [
-			{ id: "t5", project: "GVTG", name: "Task 5", status: "Done" },
-			{ id: "t6", project: "GVTG", name: "Task 6", status: "Done" },
-		],
-	},
-};
+
 const dayInWeek = moment(`${currentYear}-${currentMonth}-01`);
 
 function View() {
+	const [dataTasks, setDataTasks] = useState<DataTask<string> | null>(null);
+	useEffect(() => {
+		async function readCalendar() {
+			// @ts-ignore
+			const data = await window.calendar.read();
+			setDataTasks(data);
+		}
+		readCalendar();
+	}, []);
 	const [startDate, setStartDate] = useState<number | null>(currentDay);
 	const [endDate, setEndDate] = useState<number | null>(null);
 	const handleSelectDays = useCallback(
@@ -100,11 +66,11 @@ function View() {
 	let numberOfSelectedDaysHasTask = 0;
 
 	return (
-		<div>
-			<nav className="flex gap-2 mx-4">
+		<div className="p-3">
+			<nav className="flex gap-2">
 				<Link to="/">/calendar</Link>
 			</nav>
-			<div className="flex mx-4">
+			<div className="flex">
 				<button
 					className="flex bg-slate-200 rounded-sm px-2"
 					onClick={async () => {
@@ -124,7 +90,7 @@ function View() {
 					Grow
 				</button>
 			</div>
-			<div className="flex gap-2 mx-4">
+			<div className="flex gap-2">
 				<div className="flex gap-1">
 					<div>Day: </div>
 					<div>{currentDay}</div>
@@ -138,7 +104,7 @@ function View() {
 					<div>{currentYear}</div>
 				</div>
 			</div>
-			<div className="grid grid-cols-7 gap-[1px] m-4 bg-slate-100 border-slate-100 border-[1px]">
+			<div className="grid grid-cols-7 gap-[1px] bg-slate-100 border-slate-100 border-[1px]">
 				<div className="p-2 cell_month_name">{currentMonthName}</div>
 				<div className="p-2 bg-slate-50">T2</div>
 				<div className="p-2 bg-slate-50">T3</div>
@@ -148,7 +114,7 @@ function View() {
 				<div className="p-2 bg-slate-50">T7</div>
 				<div className="p-2 bg-slate-50">CN</div>
 				{arrayOfDays.map((day: number, index) => {
-					const time: Time = histories[day as keyof History];
+					const time = dataTasks?.months[currentMonth - 1].days[day - 1];
 					const date = moment(`${currentYear}-${currentMonth}-${day < 10 ? `0${day}` : day}`);
 					const dayInWeek = date.day();
 					const isToday = day === currentDay;
@@ -283,7 +249,7 @@ function View() {
 				</thead>
 				<tbody>
 					{arrayOfDays.slice(startDate ? startDate - 1 : endDate ? endDate - 1 : 0, endDate ? endDate : startDate ? startDate : 0).map((day, index) => {
-						const time = histories[day as keyof History];
+						const time = dataTasks?.months[currentMonth - 1].days[day - 1];
 						if (time) {
 							numberOfTasksSelected += time.tasks.length;
 							numberOfSelectedDaysHasTask += 1;

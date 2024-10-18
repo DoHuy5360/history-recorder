@@ -2,6 +2,8 @@ import { app, BrowserWindow, ipcMain, Menu, screen, Tray } from "electron";
 import path from "path";
 import { isDev, isMac } from "./util.js";
 import { getPreloadPath } from "./pathResolver.js";
+import { db } from "./connections/mongodb.js";
+import { ObjectId } from "mongodb";
 
 let forceClose = false;
 
@@ -19,6 +21,34 @@ app.on("ready", async () => {
 			preload: getPreloadPath("/preload.cjs"),
 		},
 	});
+
+	mainWin.webContents.send("receive", [{ id: 1 }, { id: 2 }]);
+
+	ipcMain.handle("fetch", () => {
+		return {
+			id: 3,
+		};
+	});
+
+	if (!db.isConnected) {
+		await db.connect();
+	}
+	ipcMain.handle("calendar:read", () =>
+		db.tasksCollection.findOne({
+			account: new ObjectId("671283cef34eba01f0ec96eb"),
+		}),
+	);
+
+	ipcMain.on("frame:grow", () => {
+		const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+		mainWin.setSize(width, height, true);
+		mainWin.setPosition(0, 0, true);
+	});
+	ipcMain.on("frame:shrink", () => {
+		mainWin.setSize(WINDOW_WIDTH, WINDOW_HEIGHT, true);
+	});
+
+	// Warning: If those code bellow is declare before event listener, it can create some usual bug like: "No handler registered ..."
 	if (isDev) {
 		mainWin.webContents.openDevTools();
 		await mainWin.loadURL("http://localhost:3000");
@@ -31,23 +61,6 @@ app.on("ready", async () => {
 			mainWin.hide();
 		}
 	});
-
-	mainWin.webContents.send("receive", [{ id: 1 }, { id: 2 }]);
-
-	ipcMain.handle("fetch", () => {
-		return {
-			id: 3,
-		};
-	});
-	ipcMain.on("frame:grow", () => {
-		const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-		mainWin.setSize(width, height, true);
-		mainWin.setPosition(0, 0, true);
-	});
-	ipcMain.on("frame:shrink", () => {
-		mainWin.setSize(WINDOW_WIDTH, WINDOW_HEIGHT, true);
-	});
-
 	createTray(mainWin);
 });
 function createTray(mainWindow: BrowserWindow) {

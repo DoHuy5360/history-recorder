@@ -9,6 +9,10 @@ contextBridge.exposeInMainWorld("electron", {
 	fetch: () => ipcRenderer.invoke("fetch"),
 } satisfies Window["electron"]);
 
+contextBridge.exposeInMainWorld("calendar", {
+	read: () => ipcRenderer.invoke("calendar:read"),
+});
+
 contextBridge.exposeInMainWorld("frame", {
 	shrink: () => {
 		ipcRenderer.send("frame:shrink");
