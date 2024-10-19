@@ -9,26 +9,27 @@ interface Window {
 	};
 }
 
-type Task = {
-	id: string;
+type Task<T> = {
+	_id: T;
 	project: string;
 	name: string;
 	status: string;
+	createdAt: string;
 };
 
-type Day = {
+type Day<T> = {
+	_id: T;
 	day: number;
-	month: number;
-	year: number;
-	tasks: Task[];
+	tasks: Task<T>[];
 };
 
-type Month = {
-	days: Day[];
+type Month<T> = {
+	month: number;
+	days: Day<T>[];
 };
 
 type DataTask<T> = {
 	_id: T;
 	account: T;
-	months: Month[];
+	months: Month<T>[];
 };
