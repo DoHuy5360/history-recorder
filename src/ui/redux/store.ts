@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import rootReducer from "./reducers/reducers";
+import rootReducer from "./reducers/_table";
 import calendarReducer from "./reducers/_calendar";
 
 export const store = configureStore({

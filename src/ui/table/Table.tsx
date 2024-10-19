@@ -1,6 +1,6 @@
 import { Fragment } from "react/jsx-runtime";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { toggle } from "../redux/reducers/reducers";
+import { toggleStatus } from "../redux/reducers/_table";
 import moment from "moment";
 import { currentMonth, currentYear } from "../calendar/Calendar";
 
@@ -16,7 +16,7 @@ function Table() {
 				<label htmlFor="">Show status</label>
 				<input
 					onChange={(e) => {
-						dispatch(toggle(e.target.checked));
+						dispatch(toggleStatus(e.target.checked));
 					}}
 					type="checkbox"
 					checked={isShowStatusColumn}

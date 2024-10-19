@@ -135,7 +135,7 @@ function View() {
 								className={`${isToday && ""}
 							${
 								startDate && endDate && day.day > startDate && day.day < endDate ? "bg-yellow-200" : day.day !== startDate && day.day !== endDate && "bg-white"
-							} h-full p-2 select-non outline outline-0 outline-blue-300 hover:outline-1 cursor-pointer
+							} h-full p-2 select-non outline outline-0 outline-blue-300 hover:outline-1 cursor-pointer duration-100
 							${startDate && startDate === day.day && "bg-green-200"}
 							${endDate && endDate === day.day && "bg-blue-200"}
 							`}

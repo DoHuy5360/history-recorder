@@ -8,11 +8,10 @@ import { ObjectId } from "mongodb";
 let forceClose = false;
 
 app.on("ready", async () => {
-	const WINDOW_WIDTH = 1000;
-	const WINDOW_HEIGHT = 800;
 	const mainWin = new BrowserWindow({
-		width: WINDOW_WIDTH,
-		height: WINDOW_HEIGHT,
+		alwaysOnTop: true,
+		center: true,
+		title: "History Recorder",
 		// frame: true, // Hide window frame
 		// alwaysOnTop: false,
 		// transparent: true,
@@ -21,6 +20,7 @@ app.on("ready", async () => {
 			preload: getPreloadPath("/preload.cjs"),
 		},
 	});
+	mainWin.maximize();
 
 	mainWin.webContents.send("receive", [{ id: 1 }, { id: 2 }]);
 
@@ -68,7 +68,7 @@ app.on("ready", async () => {
 		mainWin.setPosition(0, 0, true);
 	});
 	ipcMain.on("frame:shrink", () => {
-		mainWin.setSize(WINDOW_WIDTH, WINDOW_HEIGHT, true);
+		mainWin.setSize(600, 400, true);
 	});
 
 	// Warning: If those code bellow is declare before event listener, it can create some usual bug like: "No handler registered ..."
