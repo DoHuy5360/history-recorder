@@ -8,11 +8,11 @@ th, td{
 .cell_month_name{
     grid-column: 1 / -1;
 }
-/* .sunday:nth-child(7n+1){
-    background-image: linear-gradient(150deg, #ffbea8 11.54%, #ffffff 11.54%, #ffffff 50%, #ffbea8 50%, #ffbea8 61.54%, #ffffff 61.54%, #ffffff 100%);
-background-size: 65.00px 37.53px;
-} */
 .sunday{
-    background-image: linear-gradient(150deg, #ffbea8 11.54%, transparent 11.54%, transparent 50%, #ffbea8 50%, #ffbea8 61.54%, transparent 61.54%, transparent 100%);
+    background-image: linear-gradient(150deg, #F2CBCC 11.54%, transparent 11.54%, transparent 50%, #F2CBCC 50%, #F2CBCC 61.54%, transparent 61.54%, transparent 100%);
+background-size: 65.00px 37.53px;
+}
+.empty{
+    background-image: linear-gradient(150deg, #F1F5F9 11.54%, transparent 11.54%, transparent 50%, #F1F5F9 50%, #F1F5F9 61.54%, transparent 61.54%, transparent 100%);
 background-size: 65.00px 37.53px;
 }

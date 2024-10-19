@@ -1,12 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-// Define a type for the slice state
 interface TableState {
 	isShowStatusColumn: boolean;
 }
 
-// Define the initial state using that type
 const initialState: TableState = {
 	isShowStatusColumn: false,
 };

@@ -21,6 +21,7 @@ type Day<T> = {
 	_id: T;
 	day: number;
 	tasks: Task<T>[];
+	hasSpecialEvent?: boolean;
 };
 
 type Month<T> = {
