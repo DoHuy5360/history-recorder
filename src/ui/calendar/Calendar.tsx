@@ -1,7 +1,7 @@
 import { useCallback, useState, Fragment, useEffect } from "react";
 import "./_calendar.css";
 import moment, { months } from "moment";
-import { BiSolidFlag } from "react-icons/bi";
+import { BiSolidEditAlt, BiSolidFlag } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 import { FcCloseUpMode } from "react-icons/fc";
@@ -26,7 +26,7 @@ const numberOfEmptyCellsBeforeFirstDayOfTheMonth = firstDayInWeek === 0 ? 6 : fi
 const numberOfEmptyCellsAfterLastDayOfTheMonth = 35 - daysInMonth - numberOfEmptyCellsBeforeFirstDayOfTheMonth;
 
 function View() {
-	const { isShowAddTaskForm } = useAppSelector((state) => state.createTaskFormReducer);
+	const { isShowAddTaskForm, dayAddedTask } = useAppSelector((state) => state.createTaskFormReducer);
 	const { dataTasks, startDate, endDate } = useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
 	useEffect(() => {
@@ -128,6 +128,7 @@ function View() {
 						const isStartDay = startDate === day.day;
 						const isEndDay = endDate === day.day;
 						const isDaysBetweenStartAndEnd = startDate && endDate && day.day > startDate && day.day < endDate;
+						const isDayEdited = isShowAddTaskForm && dayAddedTask === day.day;
 						return (
 							<div
 								key={index}
@@ -137,6 +138,7 @@ function View() {
 							} h-full p-2 select-non outline outline-0 outline-slate-400 hover:outline-1 cursor-pointer transition-colors ease-in-out duration-100
 							${isStartDay && "bg-green-0"}
 							${isEndDay && "bg-blue-0"}
+							${isDayEdited && "outline-2 outline-dashed outline-purple-1 z-10"}
 							`}
 								style={{
 									gridColumn: dayInWeek,
@@ -157,17 +159,27 @@ function View() {
 											</div>
 										)}
 									</div>
-									<div className="flex">
-										<div
-											className="grid items-center w-fit text-transparent hover:text-slate-500"
-											onClick={(e) => {
-												e.stopPropagation();
-												dispatch(setShowAddTaskForm(true));
-												dispatch(setDayAddedTask(day.day));
-												dispatch(setAddingTaskTime(moment().format("HH:mm:ss")));
-											}}>
-											<FaPlus />
-										</div>
+									<div className="flex justify-between">
+										{isDayEdited ? (
+											<div
+												onClick={(e) => {
+													e.stopPropagation();
+												}}
+												className="grid items-center w-fit text-purple-1 hover:text-slate-500">
+												<BiSolidEditAlt />
+											</div>
+										) : (
+											<div
+												className="grid items-center p-2 w-fit text-transparent hover:text-slate-500"
+												onClick={(e) => {
+													e.stopPropagation();
+													dispatch(setShowAddTaskForm(true));
+													dispatch(setDayAddedTask(day.day));
+													dispatch(setAddingTaskTime(moment().format("HH:mm:ss")));
+												}}>
+												<FaPlus />
+											</div>
+										)}
 										<div
 											className={`
 										${day.day && "grid items-center text-red-500 font-bold"} w-fit px-2 py-1
@@ -182,7 +194,6 @@ function View() {
 
 				<RangeOfEmptyDay number={numberOfEmptyCellsAfterLastDayOfTheMonth} />
 			</div>
-
 			{isShowAddTaskForm && <CreateTaskForm />}
 
 			<div className="flex">

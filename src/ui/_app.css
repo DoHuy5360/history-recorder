@@ -7,3 +7,20 @@
 .bg-blue-0 {
     background-color: #D4E4FE;
 }
+.bg-purple-0{
+    background-color: #C7B4C4;
+}
+
+.text-purple-0{
+    color: #cab0c6;
+}
+
+.text-purple-1{
+    color: #7c3f73;
+}
+.outline-purple-1{
+    outline-color: #7c3f73;
+}
+*{
+    /* outline: rgb(218, 127, 127) 1px solid; */
+}

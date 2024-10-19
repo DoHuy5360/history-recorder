@@ -20,6 +20,15 @@ export const slice = createSlice({
 		setDataTasks: (state, action: PayloadAction<Month<string>>) => {
 			state.dataTasks = action.payload;
 		},
+		addTask: (
+			state,
+			action: PayloadAction<{
+				dayAddedTask: number;
+				record: Task<string>;
+			}>,
+		) => {
+			state.dataTasks?.days[action.payload.dayAddedTask - 1].tasks.push(action.payload.record);
+		},
 		setStartDate: (state, action: PayloadAction<number | null>) => {
 			state.startDate = action.payload;
 		},
@@ -29,6 +38,6 @@ export const slice = createSlice({
 	},
 });
 
-export const { setDataTasks, setStartDate, setEndDate } = slice.actions;
+export const { setDataTasks, setStartDate, setEndDate, addTask } = slice.actions;
 
 export default slice.reducer;

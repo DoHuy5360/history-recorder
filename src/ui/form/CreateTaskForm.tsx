@@ -2,9 +2,11 @@ import { FaPlus } from "react-icons/fa";
 import { currentMonth, currentYear } from "../calendar/Calendar";
 import { setTaskValue, setShowAddTaskForm } from "../redux/reducers/_createTaskForm";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { addTask, setDataTasks } from "../redux/reducers/_calendar";
 
 function CreateTaskForm() {
 	const { taskValue, dayAddedTask, isShowAddTaskForm, addingTaskTime } = useAppSelector((state) => state.createTaskFormReducer);
+	const { dataTasks } = useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
 	return (
 		isShowAddTaskForm && (
@@ -41,9 +43,12 @@ function CreateTaskForm() {
 					type="button"
 					className="bg-green-0 w-fit px-2 py-1 ml-auto"
 					onClick={async () => {
-						if (taskValue.trim() !== "") {
-							// @ts-ignore
-							const acknowledged = await window.calendar.add({
+						if (taskValue.trim() !== "" && dayAddedTask) {
+							const {
+								record,
+								acknowledged,
+							}: // @ts-ignore
+							{ record: Task<string>; acknowledged: boolean } = await window.calendar.add({
 								day: dayAddedTask,
 								month: currentMonth,
 								record: {
@@ -54,7 +59,7 @@ function CreateTaskForm() {
 								},
 							});
 							if (acknowledged) {
-								alert("success");
+								dispatch(addTask({ dayAddedTask, record }));
 							}
 						} else {
 							alert("null");

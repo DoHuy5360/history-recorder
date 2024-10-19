@@ -51,15 +51,22 @@ app.on("ready", async () => {
 	ipcMain.handle("calendar:add", async (e, data) => {
 		console.log(data);
 		const monthIndex = data.month - 1;
+		const _id = new ObjectId();
 		const { acknowledged } = await db.tasksCollection.updateOne(
 			{ _id: ObjectId.createFromHexString("671284279179b6b8e871a5ea"), [`months.${monthIndex}.days.day`]: data.day },
 			{
 				$push: {
-					[`months.${monthIndex}.days.$.tasks`]: { _id: new ObjectId(), ...data.record },
+					[`months.${monthIndex}.days.$.tasks`]: { _id, ...data.record },
 				},
 			},
 		);
-		return acknowledged;
+		return {
+			acknowledged,
+			record: {
+				_id: _id.toString(),
+				...data.record,
+			},
+		};
 	});
 
 	ipcMain.on("frame:grow", () => {
