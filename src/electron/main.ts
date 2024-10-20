@@ -69,6 +69,22 @@ app.on("ready", async () => {
 		};
 	});
 
+	ipcMain.handle("calendar:delete", async (e, data: { _id: string }) => {
+		console.log("Request delete task by id: ", data._id);
+		const { acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId } = await db.tasksCollection.updateOne(
+			{ "months.days.tasks._id": ObjectId.createFromHexString(data._id) },
+			{
+				$pull: {
+					"months.$[].days.$[].tasks": {
+						_id: ObjectId.createFromHexString(data._id),
+					},
+				},
+			},
+		);
+		console.log(acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId);
+		return { acknowledged };
+	});
+
 	ipcMain.on("frame:grow", () => {
 		const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 		mainWin.setSize(width, height, true);

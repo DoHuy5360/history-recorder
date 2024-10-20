@@ -1,8 +1,8 @@
 import { FaPlus, FaSave } from "react-icons/fa";
 import { currentMonth, currentYear } from "../calendar/Calendar";
-import { setTaskValue, setShowAddTaskForm, removeProjectSelected, addProjectSelected, addProjectSourced, removeProjectSourced } from "../redux/reducers/_createTaskForm";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { addTask } from "../redux/reducers/_calendar";
+import { setTaskValue, setShowAddTaskForm, removeProjectSelected, addProjectSelected, addProjectSourced, removeProjectSourced } from "../redux/reducers/_createTaskForm";
+import { addTask, removeTask } from "../redux/reducers/_calendar";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import TimeRunner from "./TimeRunner";
@@ -42,7 +42,7 @@ function CreateTaskForm() {
 						</tr>
 					</thead>
 					<tbody>
-						{dataTasks?.days[indexOfTheDaySelectedForAddedTask].tasks.map((task) => {
+						{dataTasks?.days[indexOfTheDaySelectedForAddedTask].tasks.map((task, index) => {
 							return (
 								<tr key={task._id}>
 									<td>{task.createdAt}</td>
@@ -53,7 +53,22 @@ function CreateTaskForm() {
 											<div className="text-purple-600 cursor-pointer px-2 py-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
 												<BiSolidEditAlt />
 											</div>
-											<div className="text-red-600 cursor-pointer px-2 py-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
+											<div
+												onClick={async () => {
+													// @ts-ignore
+													const { acknowledged } = await window.calendar.delete({
+														_id: task._id,
+													});
+													if (acknowledged) {
+														dispatch(
+															removeTask({
+																indexOfTheDaySelectedForRemovedTask: indexOfTheDaySelectedForAddedTask,
+																taskIndex: index,
+															}),
+														);
+													}
+												}}
+												className="text-red-600 cursor-pointer px-2 py-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
 												<MdDelete />
 											</div>
 										</div>

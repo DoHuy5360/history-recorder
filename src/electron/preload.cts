@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld("electron", {
 contextBridge.exposeInMainWorld("calendar", {
 	read: (data: any) => ipcRenderer.invoke("calendar:read", data),
 	add: (data: any) => ipcRenderer.invoke("calendar:add", data),
+	delete: (data: any) => ipcRenderer.invoke("calendar:delete", data),
 });
 
 contextBridge.exposeInMainWorld("frame", {
