@@ -34,3 +34,8 @@ type DataTask<T> = {
 	account: T;
 	months: Month<T>[];
 };
+
+type Project = {
+	_id: string;
+	name?: string;
+};

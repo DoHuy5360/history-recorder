@@ -75,7 +75,7 @@ function View() {
 			</nav>
 			<div className="flex">
 				<button
-					className="flex bg-slate-200 rounded-sm px-2"
+					className="flex bg-slate-100 rounded-sm px-2"
 					onClick={async () => {
 						// @ts-ignore
 						window.frame.shrink();
@@ -84,7 +84,7 @@ function View() {
 					Shrink
 				</button>
 				<button
-					className="flex bg-slate-200 rounded-sm px-2"
+					className="flex bg-slate-100 rounded-sm px-2"
 					onClick={async () => {
 						// @ts-ignore
 						window.frame.grow();
@@ -134,10 +134,10 @@ function View() {
 								key={index}
 								className={`${isToday && ""}
 							${
-								isDaysBetweenStartAndEnd ? `bg-yellow-0` : day.day !== startDate && day.day !== endDate && "bg-white"
+								isDaysBetweenStartAndEnd ? `bg-yellow-100` : day.day !== startDate && day.day !== endDate && "bg-white"
 							} h-full p-2 select-non outline outline-0 outline-slate-400 hover:outline-1 cursor-pointer transition-colors ease-in-out duration-100
-							${isStartDay && "bg-green-0"}
-							${isEndDay && "bg-blue-0"}
+							${isStartDay && "bg-green-100"}
+							${isEndDay && "bg-blue-100"}
 							${isDayEdited && "outline-2 outline-dashed outline-purple-1 z-10"}
 							`}
 								style={{
@@ -165,7 +165,7 @@ function View() {
 												onClick={(e) => {
 													e.stopPropagation();
 												}}
-												className="grid items-center w-fit text-purple-1 hover:text-slate-500">
+												className="grid items-center w-fit text-purple-600 hover:text-slate-500">
 												<BiSolidEditAlt />
 											</div>
 										) : (
@@ -175,7 +175,6 @@ function View() {
 													e.stopPropagation();
 													dispatch(setShowAddTaskForm(true));
 													dispatch(setDayAddedTask(day.day));
-													dispatch(setAddingTaskTime(moment().format("HH:mm:ss")));
 												}}>
 												<FaPlus />
 											</div>

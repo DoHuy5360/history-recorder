@@ -23,11 +23,11 @@ export const slice = createSlice({
 		addTask: (
 			state,
 			action: PayloadAction<{
-				dayAddedTask: number;
+				indexOfTheDaySelectedForAddedTask: number;
 				record: Task<string>;
 			}>,
 		) => {
-			state.dataTasks?.days[action.payload.dayAddedTask - 1].tasks.push(action.payload.record);
+			state.dataTasks?.days[action.payload.indexOfTheDaySelectedForAddedTask].tasks.push(action.payload.record);
 		},
 		setStartDate: (state, action: PayloadAction<number | null>) => {
 			state.startDate = action.payload;
