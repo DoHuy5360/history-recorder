@@ -10,7 +10,7 @@ function App() {
 	// 	});
 	// }, []);
 	return (
-		<div>
+		<div className="overflow-y-hidden">
 			<Router>
 				<Routes>
 					<Route path="/" element={<Calendar />} />

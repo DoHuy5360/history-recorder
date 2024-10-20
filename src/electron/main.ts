@@ -9,9 +9,9 @@ let forceClose = false;
 
 app.on("ready", async () => {
 	const mainWin = new BrowserWindow({
-		alwaysOnTop: true,
 		center: true,
 		title: "History Recorder",
+		// alwaysOnTop: true,
 		// frame: true, // Hide window frame
 		// alwaysOnTop: false,
 		// transparent: true,

@@ -170,7 +170,7 @@ function View() {
 											</div>
 										) : (
 											<div
-												className="grid items-center p-2 w-fit text-transparent hover:text-slate-500"
+												className="grid items-center w-fit text-transparent hover:text-slate-500"
 												onClick={(e) => {
 													e.stopPropagation();
 													dispatch(setShowAddTaskForm(true));
