@@ -9,7 +9,7 @@ interface CreateTaskFormState {
 	projectsSource: Project[];
 	projectsSelected: Project[];
 	indexOfTheTaskSelectedForEdit: null | number;
-	updateTaskValue: null | string;
+	updateTaskValue: string;
 }
 
 const initialState: CreateTaskFormState = {
@@ -27,7 +27,7 @@ const initialState: CreateTaskFormState = {
 	],
 	projectsSelected: [],
 	indexOfTheTaskSelectedForEdit: null,
-	updateTaskValue: null,
+	updateTaskValue: "",
 };
 
 export const slice = createSlice({
@@ -37,7 +37,7 @@ export const slice = createSlice({
 		setTaskValue: (state, action: PayloadAction<string>) => {
 			state.taskValue = action.payload;
 		},
-		setUpdateTaskValue: (state, action: PayloadAction<string | null>) => {
+		setUpdateTaskValue: (state, action: PayloadAction<string>) => {
 			state.updateTaskValue = action.payload;
 		},
 		setDayAddedTask: (state, action: PayloadAction<number>) => {
@@ -61,6 +61,9 @@ export const slice = createSlice({
 		removeProjectSelected: (state, action: PayloadAction<number>) => {
 			state.projectsSelected.splice(action.payload, 1);
 		},
+		clearProjectSelected: (state) => {
+			state.projectsSelected.length = 0;
+		},
 		setIndexOfTheTaskSelectedForEdit: (state, action: PayloadAction<number | null>) => {
 			state.indexOfTheTaskSelectedForEdit = action.payload;
 		},
@@ -78,6 +81,7 @@ export const {
 	removeProjectSourced,
 	setIndexOfTheTaskSelectedForEdit,
 	setUpdateTaskValue,
+	clearProjectSelected,
 } = slice.actions;
 
 export default slice.reducer;

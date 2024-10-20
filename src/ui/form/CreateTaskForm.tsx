@@ -10,6 +10,7 @@ import {
 	addProjectSourced,
 	removeProjectSourced,
 	setUpdateTaskValue,
+	clearProjectSelected,
 } from "../redux/reducers/_createTaskForm";
 import { addTask, removeTask, updateTask } from "../redux/reducers/_calendar";
 import { BiSolidEditAlt } from "react-icons/bi";
@@ -32,21 +33,26 @@ function CreateTaskForm() {
 		isShowAddTaskForm &&
 		indexOfTheDaySelectedForAddedTask !== null && (
 			<div className="flex flex-col bg-slate-50">
-				<div className="flex gap-3 items-center bg-slate-100 w-fit p-1 select-none">
-					<span>
-						{dayAddedTask}/{currentMonth}/{currentYear}
-					</span>
-					<button
-						type="button"
-						className="w-fit text-slate-400 hover:text-slate-500 rotate-45"
-						onClick={() => {
-							dispatch(setShowAddTaskForm(false));
-						}}>
-						<FaPlus />
-					</button>
-				</div>
 				<table className="bg-white">
 					<thead>
+						<tr>
+							<th colSpan={4}>
+								<div className="flex gap-3 justify-between items-center select-none">
+									<span>
+										{dayAddedTask}/{currentMonth}/{currentYear}
+									</span>
+									<div className="w-fit text-red-600 cursor-pointer p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
+										<div
+											className="rotate-45"
+											onClick={() => {
+												dispatch(setShowAddTaskForm(false));
+											}}>
+											<FaPlus />
+										</div>
+									</div>
+								</div>
+							</th>
+						</tr>
 						<tr>
 							<th>At</th>
 							<th>Project(s)</th>
@@ -71,7 +77,7 @@ function CreateTaskForm() {
 													e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
 													dispatch(setUpdateTaskValue(e.currentTarget.value));
 												}}
-												value={updateTaskValue !== null ? updateTaskValue : task.name}></textarea>
+												value={updateTaskValue ? updateTaskValue : task.name}></textarea>
 										) : (
 											task.name
 										)}
@@ -84,7 +90,7 @@ function CreateTaskForm() {
 														className="text-red-600 p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500 cursor-pointer"
 														onClick={() => {
 															dispatch(setIndexOfTheTaskSelectedForEdit(null));
-															dispatch(setUpdateTaskValue(null));
+															dispatch(setUpdateTaskValue(""));
 														}}>
 														<div className="rotate-45">
 															<FaPlus />
@@ -120,6 +126,7 @@ function CreateTaskForm() {
 																				record,
 																			}),
 																		);
+																		dispatch(setUpdateTaskValue(""));
 																		dispatch(setIndexOfTheTaskSelectedForEdit(null));
 																	}
 																}}>
@@ -175,35 +182,37 @@ function CreateTaskForm() {
 							<td>{taskValue}</td>
 							<td>
 								<div className="flex justify-center">
-									<button
-										type="button"
-										className="w-fit p-1 rounded-sm text-green-600 hover:outline-1 outline-0 outline outline-slate-500"
-										onClick={async () => {
-											if (taskValue.trim() !== "" && dayAddedTask) {
-												const {
-													record,
-													acknowledged,
-												}: // @ts-ignore
-												{ record: Task<string>; acknowledged: boolean } = await window.calendar.add({
-													day: dayAddedTask,
-													month: currentMonth,
-													record: {
-														project: projectsSelectedString,
-														name: taskValue,
-														status: "<?>",
-														createdAt: moment().format("HH:mm:ss"),
-													},
-												});
-												if (acknowledged) {
-													dispatch(setTaskValue(""));
-													dispatch(addTask({ indexOfTheDaySelectedForAddedTask, record }));
+									{taskValue && projectsSelectedString && (
+										<div
+											className="w-fit p-1 rounded-sm text-green-600 hover:outline-1 outline-0 outline outline-slate-500 cursor-pointer"
+											onClick={async () => {
+												if (taskValue.trim() !== "" && dayAddedTask) {
+													const {
+														record,
+														acknowledged,
+													}: // @ts-ignore
+													{ record: Task<string>; acknowledged: boolean } = await window.calendar.add({
+														day: dayAddedTask,
+														month: currentMonth,
+														record: {
+															project: projectsSelectedString,
+															name: taskValue,
+															status: "<?>",
+															createdAt: moment().format("HH:mm:ss"),
+														},
+													});
+													if (acknowledged) {
+														dispatch(setTaskValue(""));
+														dispatch(clearProjectSelected());
+														dispatch(addTask({ indexOfTheDaySelectedForAddedTask, record }));
+													}
+												} else {
+													console.log("Missing data");
 												}
-											} else {
-												console.log("Missing data");
-											}
-										}}>
-										<FaSave />
-									</button>
+											}}>
+											<FaSave />
+										</div>
+									)}
 								</div>
 							</td>
 						</tr>
@@ -259,7 +268,8 @@ function CreateTaskForm() {
 						e.currentTarget.style.height = "5px";
 						e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
 						dispatch(setTaskValue(e.currentTarget.value));
-					}}></textarea>
+					}}
+					value={taskValue}></textarea>
 			</div>
 		)
 	);
