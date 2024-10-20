@@ -1,16 +1,29 @@
 import { FaPlus, FaSave } from "react-icons/fa";
 import { currentMonth, currentYear } from "../calendar/Calendar";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { setTaskValue, setShowAddTaskForm, removeProjectSelected, addProjectSelected, addProjectSourced, removeProjectSourced } from "../redux/reducers/_createTaskForm";
-import { addTask, removeTask } from "../redux/reducers/_calendar";
+import {
+	setTaskValue,
+	setShowAddTaskForm,
+	setIndexOfTheTaskSelectedForEdit,
+	removeProjectSelected,
+	addProjectSelected,
+	addProjectSourced,
+	removeProjectSourced,
+	setUpdateTaskValue,
+} from "../redux/reducers/_createTaskForm";
+import { addTask, removeTask, updateTask } from "../redux/reducers/_calendar";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import TimeRunner from "./TimeRunner";
 import { BsFillClockFill } from "react-icons/bs";
 import moment from "moment";
+import { FaArrowRotateRight } from "react-icons/fa6";
+import { Fragment } from "react/jsx-runtime";
 
 function CreateTaskForm() {
-	const { taskValue, dayAddedTask, isShowAddTaskForm, addingTaskTime, projectsSource, projectsSelected } = useAppSelector((state) => state.createTaskFormReducer);
+	const { taskValue, dayAddedTask, isShowAddTaskForm, addingTaskTime, projectsSource, projectsSelected, indexOfTheTaskSelectedForEdit, updateTaskValue } = useAppSelector(
+		(state) => state.createTaskFormReducer,
+	);
 	const { dataTasks } = useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
 	const indexOfTheDaySelectedForAddedTask = dayAddedTask && dayAddedTask - 1;
@@ -19,7 +32,7 @@ function CreateTaskForm() {
 		isShowAddTaskForm &&
 		indexOfTheDaySelectedForAddedTask !== null && (
 			<div className="flex flex-col bg-slate-50">
-				<div className="flex gap-3 items-center bg-slate-100 w-fit px-2 py-1 select-none">
+				<div className="flex gap-3 items-center bg-slate-100 w-fit p-1 select-none">
 					<span>
 						{dayAddedTask}/{currentMonth}/{currentYear}
 					</span>
@@ -43,34 +56,105 @@ function CreateTaskForm() {
 					</thead>
 					<tbody>
 						{dataTasks?.days[indexOfTheDaySelectedForAddedTask].tasks.map((task, index) => {
+							const isEditing = indexOfTheTaskSelectedForEdit === index;
 							return (
 								<tr key={task._id}>
 									<td>{task.createdAt}</td>
-									<td>{task.project}</td>
-									<td>{task.name}</td>
+									<td className="max-w-40">{task.project}</td>
 									<td>
-										<div className="flex gap-2 items-center justify-center">
-											<div className="text-purple-600 cursor-pointer px-2 py-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
-												<BiSolidEditAlt />
-											</div>
-											<div
-												onClick={async () => {
-													// @ts-ignore
-													const { acknowledged } = await window.calendar.delete({
-														_id: task._id,
-													});
-													if (acknowledged) {
-														dispatch(
-															removeTask({
-																indexOfTheDaySelectedForRemovedTask: indexOfTheDaySelectedForAddedTask,
-																taskIndex: index,
-															}),
-														);
-													}
+										{isEditing ? (
+											<textarea
+												className="resize-none min-h-20 overflow-hidden border-[1px] p-2 w-full"
+												autoFocus={isEditing}
+												onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
+													e.currentTarget.style.height = "5px";
+													e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+													dispatch(setUpdateTaskValue(e.currentTarget.value));
 												}}
-												className="text-red-600 cursor-pointer px-2 py-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
-												<MdDelete />
-											</div>
+												value={updateTaskValue !== null ? updateTaskValue : task.name}></textarea>
+										) : (
+											task.name
+										)}
+									</td>
+									<td>
+										<div className="flex gap-1 items-center justify-center">
+											{isEditing ? (
+												<div className="flex gap-1 items-center">
+													<div
+														className="text-red-600 p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500 cursor-pointer"
+														onClick={() => {
+															dispatch(setIndexOfTheTaskSelectedForEdit(null));
+															dispatch(setUpdateTaskValue(null));
+														}}>
+														<div className="rotate-45">
+															<FaPlus />
+														</div>
+													</div>
+
+													{updateTaskValue && updateTaskValue !== task.name && (
+														<Fragment>
+															<div
+																className="text-yellow-600 p-1 rounded-sm cursor-pointer hover:outline-1 outline-0 outline outline-slate-500"
+																onClick={() => {
+																	dispatch(setUpdateTaskValue(task.name));
+																}}>
+																<FaArrowRotateRight />
+															</div>
+															<div
+																className="w-fit p-1 rounded-sm text-green-600 cursor-pointer hover:outline-1 outline-0 outline outline-slate-500"
+																onClick={async () => {
+																	const record = {
+																		...task,
+																		name: updateTaskValue,
+																	};
+																	// @ts-ignore
+																	const { acknowledged } = await window.calendar.update({
+																		_id: task._id,
+																		record,
+																	});
+																	if (acknowledged) {
+																		dispatch(
+																			updateTask({
+																				indexOfTheDaySelectedForUpdatedTask: indexOfTheDaySelectedForAddedTask,
+																				taskIndex: index,
+																				record,
+																			}),
+																		);
+																		dispatch(setIndexOfTheTaskSelectedForEdit(null));
+																	}
+																}}>
+																<FaSave />
+															</div>
+														</Fragment>
+													)}
+													<div
+														onClick={async () => {
+															// @ts-ignore
+															const { acknowledged } = await window.calendar.delete({
+																_id: task._id,
+															});
+															if (acknowledged) {
+																dispatch(
+																	removeTask({
+																		indexOfTheDaySelectedForRemovedTask: indexOfTheDaySelectedForAddedTask,
+																		taskIndex: index,
+																	}),
+																);
+															}
+														}}
+														className="text-red-600 cursor-pointer p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
+														<MdDelete />
+													</div>
+												</div>
+											) : (
+												<div
+													onClick={() => {
+														dispatch(setIndexOfTheTaskSelectedForEdit(index));
+													}}
+													className="text-purple-600 cursor-pointer p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
+													<BiSolidEditAlt />
+												</div>
+											)}
 										</div>
 									</td>
 								</tr>
@@ -93,7 +177,7 @@ function CreateTaskForm() {
 								<div className="flex justify-center">
 									<button
 										type="button"
-										className="w-fit px-2 py-1 rounded-sm text-green-600 hover:outline-1 outline-0 outline outline-slate-500"
+										className="w-fit p-1 rounded-sm text-green-600 hover:outline-1 outline-0 outline outline-slate-500"
 										onClick={async () => {
 											if (taskValue.trim() !== "" && dayAddedTask) {
 												const {
@@ -134,7 +218,7 @@ function CreateTaskForm() {
 									return (
 										<div
 											key={"project-" + index}
-											className="bg-green-100 w-fit rounded-md whitespace-nowrap px-2 py-1 text-xs cursor-pointer border-[1px] border-green-600 select-none hover:bg-red-300 hover:border-red-600"
+											className="bg-green-100 w-fit rounded-md whitespace-nowrap p-1 text-xs cursor-pointer border-[1px] border-green-600 select-none hover:bg-red-300 hover:border-red-600"
 											onClick={() => {
 												dispatch(removeProjectSelected(index));
 												dispatch(addProjectSourced(project));
@@ -156,7 +240,7 @@ function CreateTaskForm() {
 									return (
 										<div
 											key={"project-" + index}
-											className="w-fit rounded-md whitespace-nowrap px-2 py-1 text-xs cursor-pointer hover:bg-slate-100 border-[1px] border-slate-600 select-none"
+											className="w-fit rounded-md whitespace-nowrap p-1 text-xs cursor-pointer hover:bg-slate-100 border-[1px] border-slate-600 select-none"
 											onClick={() => {
 												dispatch(addProjectSelected(project));
 												dispatch(removeProjectSourced(index));

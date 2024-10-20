@@ -69,6 +69,27 @@ app.on("ready", async () => {
 		};
 	});
 
+	ipcMain.handle("calendar:update", async (e, data: { _id: string; record: any }) => {
+		console.log("Request update task by id: ", data._id);
+		const taskIndex = data;
+		const { acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId } = await db.tasksCollection.updateOne(
+			{ "months.days.tasks._id": ObjectId.createFromHexString(data._id) },
+			{
+				$set: {
+					// [`months.$[].days.$[].tasks.$[].project`]: "<New Project Name>",
+					[`months.$[].days.$[].tasks.$[task].name`]: data.record.name,
+					// [`months.$[].days.$[].tasks.$[].status`]: "<New Status>",
+					// [`months.$[].days.$[].tasks.$[].createdAt`]: "<New Time>",
+				},
+			},
+			{
+				arrayFilters: [{ "task._id": ObjectId.createFromHexString(data._id) }],
+			},
+		);
+		console.log(acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId);
+		return { acknowledged };
+	});
+
 	ipcMain.handle("calendar:delete", async (e, data: { _id: string }) => {
 		console.log("Request delete task by id: ", data._id);
 		const { acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId } = await db.tasksCollection.updateOne(

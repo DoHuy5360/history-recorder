@@ -8,6 +8,8 @@ interface CreateTaskFormState {
 	addingTaskTime: string;
 	projectsSource: Project[];
 	projectsSelected: Project[];
+	indexOfTheTaskSelectedForEdit: null | number;
+	updateTaskValue: null | string;
 }
 
 const initialState: CreateTaskFormState = {
@@ -24,6 +26,8 @@ const initialState: CreateTaskFormState = {
 		{ _id: "6", name: "Lecturer Attendance Management" },
 	],
 	projectsSelected: [],
+	indexOfTheTaskSelectedForEdit: null,
+	updateTaskValue: null,
 };
 
 export const slice = createSlice({
@@ -32,6 +36,9 @@ export const slice = createSlice({
 	reducers: {
 		setTaskValue: (state, action: PayloadAction<string>) => {
 			state.taskValue = action.payload;
+		},
+		setUpdateTaskValue: (state, action: PayloadAction<string | null>) => {
+			state.updateTaskValue = action.payload;
 		},
 		setDayAddedTask: (state, action: PayloadAction<number>) => {
 			state.dayAddedTask = action.payload;
@@ -54,9 +61,23 @@ export const slice = createSlice({
 		removeProjectSelected: (state, action: PayloadAction<number>) => {
 			state.projectsSelected.splice(action.payload, 1);
 		},
+		setIndexOfTheTaskSelectedForEdit: (state, action: PayloadAction<number | null>) => {
+			state.indexOfTheTaskSelectedForEdit = action.payload;
+		},
 	},
 });
 
-export const { setTaskValue, setDayAddedTask, setShowAddTaskForm, setAddingTaskTime, addProjectSelected, removeProjectSelected, addProjectSourced, removeProjectSourced } = slice.actions;
+export const {
+	setTaskValue,
+	setDayAddedTask,
+	setShowAddTaskForm,
+	setAddingTaskTime,
+	addProjectSelected,
+	removeProjectSelected,
+	addProjectSourced,
+	removeProjectSourced,
+	setIndexOfTheTaskSelectedForEdit,
+	setUpdateTaskValue,
+} = slice.actions;
 
 export default slice.reducer;
