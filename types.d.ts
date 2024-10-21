@@ -16,11 +16,20 @@ type Task<T> = {
 	status: string;
 	createdAt: string;
 };
+type Event<T> = {
+	_id: T;
+	name: string;
+	from: string;
+	to: string;
+	status: string;
+	createdAt: string;
+};
 
 type Day<T> = {
 	_id: T;
 	day: number;
 	tasks: Task<T>[];
+	events: Event<T>[];
 	hasSpecialEvent?: boolean;
 };
 

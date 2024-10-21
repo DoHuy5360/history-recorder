@@ -13,9 +13,11 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import CreateTaskForm from "../form/CreateTaskForm";
 import RangeOfEmptyDay from "./RangeOfEmptyDay";
 import Navigate from "./Navigate";
+import CreateEventForm from "../form/CreateEventForm";
 
 function View() {
 	const { isShowAddTaskForm, dayAddedTask } = useAppSelector((state) => state.createTaskFormReducer);
+	const { isShowAddEventForm } = useAppSelector((state) => state.createEventFormReducer);
 	const { dataTasks, startDate, endDate, currentDay, currentMonth, currentYear, currentMonthName, numberOfEmptyCellsAfterLastDayOfTheMonth, numberOfEmptyCellsBeforeFirstDayOfTheMonth } =
 		useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
@@ -120,6 +122,7 @@ function View() {
 										<div className="flex items-center gap-1">
 											<div>{day.day}</div>
 											{day.hasSpecialEvent && <FcCloseUpMode />}
+											{day.events}
 										</div>
 										{isToday && (
 											<div className="text-red-500 h-fit">
@@ -162,6 +165,7 @@ function View() {
 				<RangeOfEmptyDay number={numberOfEmptyCellsAfterLastDayOfTheMonth} />
 			</div>
 			{isShowAddTaskForm && <CreateTaskForm />}
+			{isShowAddEventForm && <CreateEventForm />}
 
 			<div className="flex">
 				<div className="flex">
