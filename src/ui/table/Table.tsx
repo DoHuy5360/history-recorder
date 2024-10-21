@@ -2,11 +2,10 @@ import { Fragment } from "react/jsx-runtime";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { toggleStatus } from "../redux/reducers/_table";
 import moment from "moment";
-import { currentMonth, currentYear } from "../calendar/Calendar";
 
 function Table() {
 	const isShowStatusColumn = useAppSelector((state) => state.rootReducer.isShowStatusColumn);
-	const { dataTasks, startDate, endDate } = useAppSelector((state) => state.calendarReducer);
+	const { dataTasks, startDate, endDate, currentMonth, currentDay, daysInMonth, currentYear } = useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
 	let numberOfTasksSelected = 0;
 	let numberOfSelectedDaysHasTask = 0;

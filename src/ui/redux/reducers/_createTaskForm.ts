@@ -18,6 +18,7 @@ const initialState: CreateTaskFormState = {
 	dayAddedTask: null,
 	addingTaskTime: "",
 	projectsSource: [
+		{ _id: "0", name: "Other" },
 		{ _id: "1", name: "Course Learning Outcomes" },
 		{ _id: "2", name: "Student Information Lookup" },
 		{ _id: "3", name: "Visiting Lecturer Management" },

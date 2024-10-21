@@ -13,12 +13,12 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import CreateTaskForm from "../form/CreateTaskForm";
 import RangeOfEmptyDay from "./RangeOfEmptyDay";
 
-export const currentMonth = moment().month() + 1;
-export const currentMonthName = moment().format("MMMM");
-export const currentDay = moment().date();
-export const daysInMonth = moment().daysInMonth();
-export const currentYear = moment().year();
-export const arrayOfDays = Array.from({ length: daysInMonth }, (v, k) => ++k);
+const currentMonthName = moment().format("MMMM");
+const currentMonth = moment().month() + 1;
+const currentDay = moment().date();
+const daysInMonth = moment().daysInMonth();
+const currentYear = moment().year();
+const arrayOfDays = Array.from({ length: daysInMonth }, (_, k) => ++k);
 
 const firstDateInMonth = moment(`${currentYear}-${currentMonth}-01`);
 const firstDayInWeek = firstDateInMonth.day();
@@ -70,28 +70,13 @@ function View() {
 	);
 	return (
 		<div className="p-3">
-			<nav className="flex gap-2">
-				<Link to="/">/calendar</Link>
-			</nav>
-			<div className="flex">
-				<button
-					className="flex bg-slate-100 rounded-sm px-2"
-					onClick={async () => {
-						// @ts-ignore
-						window.frame.shrink();
-					}}
-					type="button">
-					Shrink
-				</button>
-				<button
-					className="flex bg-slate-100 rounded-sm px-2"
-					onClick={async () => {
-						// @ts-ignore
-						window.frame.grow();
-					}}
-					type="button">
-					Grow
-				</button>
+			<div className="flex border-b-[1px] border-slate-100">
+				<nav className="flex gap-2 px-2 bg-slate-100">
+					<Link to="/">calendar</Link>
+				</nav>
+				<nav className="flex gap-2 px-2">
+					<Link to="/">calendar</Link>
+				</nav>
 			</div>
 			<div className="flex gap-2">
 				<div className="flex gap-1">

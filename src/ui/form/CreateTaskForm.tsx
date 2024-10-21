@@ -1,5 +1,4 @@
 import { FaPlus, FaSave } from "react-icons/fa";
-import { currentMonth, currentYear } from "../calendar/Calendar";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
 	setTaskValue,
@@ -25,7 +24,7 @@ function CreateTaskForm() {
 	const { taskValue, dayAddedTask, isShowAddTaskForm, addingTaskTime, projectsSource, projectsSelected, indexOfTheTaskSelectedForEdit, updateTaskValue } = useAppSelector(
 		(state) => state.createTaskFormReducer,
 	);
-	const { dataTasks } = useAppSelector((state) => state.calendarReducer);
+	const { dataTasks, currentMonth, currentDay, daysInMonth, currentYear } = useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
 	const indexOfTheDaySelectedForAddedTask = dayAddedTask && dayAddedTask - 1;
 	const projectsSelectedString = projectsSelected.map((project) => project.name).join(", ");

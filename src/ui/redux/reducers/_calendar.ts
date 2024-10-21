@@ -1,13 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import moment from "moment";
 
 interface CalendarState {
+	currentMonth: number;
+	currentDay: number;
+	daysInMonth: number;
+	currentYear: number;
 	dataTasks: null | Month<string>;
 	startDate: null | number;
 	endDate: null | number;
 }
 
 const initialState: CalendarState = {
+	currentMonth: moment().month() + 1,
+	currentDay: moment().date(),
+	daysInMonth: moment().daysInMonth(),
+	currentYear: moment().year(),
 	dataTasks: null,
 	startDate: null,
 	endDate: null,
