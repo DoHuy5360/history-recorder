@@ -43,6 +43,11 @@ app.on("ready", async () => {
 					task._id = task._id.toString();
 				});
 			}
+			if (day.events.length > 0) {
+				day.events.forEach((event: any) => {
+					event._id = event._id.toString();
+				});
+			}
 		});
 		return {
 			data: calendar?.months[data.month - 1],
@@ -57,6 +62,25 @@ app.on("ready", async () => {
 			{
 				$push: {
 					[`months.${monthIndex}.days.$.tasks`]: { _id, ...data.record },
+				},
+			},
+		);
+		return {
+			acknowledged,
+			record: {
+				_id: _id.toString(),
+				...data.record,
+			},
+		};
+	});
+	ipcMain.handle("calendarEvent:create", async (e, data) => {
+		const monthIndex = data.month - 1;
+		const _id = new ObjectId();
+		const { acknowledged } = await db.tasksCollection.updateOne(
+			{ _id: ObjectId.createFromHexString("671284279179b6b8e871a5ea"), [`months.${monthIndex}.days.day`]: data.day },
+			{
+				$push: {
+					[`months.${monthIndex}.days.$.events`]: { _id, ...data.record },
 				},
 			},
 		);

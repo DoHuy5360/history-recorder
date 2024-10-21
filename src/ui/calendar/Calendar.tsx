@@ -3,7 +3,7 @@ import "./_calendar.css";
 import moment from "moment";
 import { BiSolidEditAlt, BiSolidFlag } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaStar } from "react-icons/fa";
 import { FcCloseUpMode } from "react-icons/fc";
 import Table from "../table/Table";
 
@@ -14,6 +14,7 @@ import CreateTaskForm from "../form/CreateTaskForm";
 import RangeOfEmptyDay from "./RangeOfEmptyDay";
 import Navigate from "./Navigate";
 import CreateEventForm from "../form/CreateEventForm";
+import { setDayAddedEvent, setShowAddEventForm } from "../redux/reducers/_createEventForm";
 
 function View() {
 	const { isShowAddTaskForm, dayAddedTask } = useAppSelector((state) => state.createTaskFormReducer);
@@ -118,17 +119,23 @@ function View() {
 									handleSelectDays(day.day);
 								}}>
 								<div className={`${isSunday && "sunday"}`}>
-									<div className="flex justify-between items-center">
-										<div className="flex items-center gap-1">
+									<div className="flex flex-col">
+										<div className="flex justify-between items-center">
 											<div>{day.day}</div>
-											{day.hasSpecialEvent && <FcCloseUpMode />}
-											{day.events}
+											{isToday && (
+												<div className="text-red-500 h-fit">
+													<BiSolidFlag />
+												</div>
+											)}
 										</div>
-										{isToday && (
-											<div className="text-red-500 h-fit">
-												<BiSolidFlag />
-											</div>
-										)}
+										<div className="flex items-center gap-1">
+											{day.hasSpecialEvent && <FcCloseUpMode />}
+											{day.events.length > 0 && (
+												<div className="text-yellow-600">
+													<FaStar />
+												</div>
+											)}
+										</div>
 									</div>
 									<div className="flex justify-between">
 										{isDayEdited ? (
@@ -145,7 +152,9 @@ function View() {
 												onClick={(e) => {
 													e.stopPropagation();
 													dispatch(setShowAddTaskForm(true));
+													dispatch(setShowAddEventForm(true));
 													dispatch(setDayAddedTask(day.day));
+													dispatch(setDayAddedEvent(day.day));
 												}}>
 												<FaPlus />
 											</div>
@@ -164,25 +173,29 @@ function View() {
 
 				<RangeOfEmptyDay number={numberOfEmptyCellsAfterLastDayOfTheMonth} />
 			</div>
+			{(startDate || endDate) && (
+				<div className="flex">
+					<div className="flex">
+						<label htmlFor="">From</label>
+						<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${startDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
+					</div>
+					{endDate && (
+						<div className="flex">
+							<label htmlFor="">To</label>
+							<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${endDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
+						</div>
+					)}
+					<div>
+						{Math.abs((startDate ? startDate - 1 : endDate ? endDate - 1 : 0) - (endDate ? endDate : startDate ? startDate : 0))}
+						&#160;day(s) selected
+					</div>
+				</div>
+			)}
+			<br />
 			{isShowAddTaskForm && <CreateTaskForm />}
+			<br />
 			{isShowAddEventForm && <CreateEventForm />}
-
-			<div className="flex">
-				<div className="flex">
-					<label htmlFor="">From</label>
-					<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${startDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
-				</div>
-				<div className="flex">
-					<label htmlFor="">To</label>
-					<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${endDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
-				</div>
-				<div>
-					{Math.abs((startDate ? startDate - 1 : endDate ? endDate - 1 : 0) - (endDate ? endDate : startDate ? startDate : 0))}
-					&#160;day(s) selected
-				</div>
-			</div>
-
-			<Table />
+			{(startDate || endDate) && <Table />}
 		</div>
 	);
 }

@@ -1,17 +1,17 @@
 import { FaPlus, FaSave } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
-	setTaskValue,
-	setShowAddTaskForm,
-	setIndexOfTheTaskSelectedForEdit,
+	setEventValue,
+	setShowAddEventForm,
+	setIndexOfTheEventSelectedForEdit,
 	removeProjectSelected,
 	addProjectSelected,
 	addProjectSourced,
 	removeProjectSourced,
-	setUpdateTaskValue,
+	setUpdateEventValue,
 	clearProjectSelected,
-} from "../redux/reducers/_createTaskForm";
-import { addTask, removeTask, updateTask } from "../redux/reducers/_calendar";
+} from "../redux/reducers/_createEventForm";
+import { addEvent, addTask, removeTask, updateTask } from "../redux/reducers/_calendar";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import TimeRunner from "./TimeRunner";
@@ -21,28 +21,29 @@ import { FaArrowRotateRight } from "react-icons/fa6";
 import { Fragment } from "react/jsx-runtime";
 
 function CreateEventForm() {
-	const { taskValue, dayAddedTask, isShowAddTaskForm, projectsSource, projectsSelected, indexOfTheTaskSelectedForEdit, updateTaskValue } = useAppSelector((state) => state.createTaskFormReducer);
+	const { eventValue, dayAddedEvent, isShowAddEventForm, projectsSource, projectsSelected, indexOfTheEventSelectedForEdit, updateEventValue } = useAppSelector(
+		(state) => state.createEventFormReducer,
+	);
 	const { dataTasks, currentMonth, currentYear } = useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
-	const indexOfTheDaySelectedForAddedTask = dayAddedTask && dayAddedTask - 1;
+	const indexOfTheDaySelectedForAddedTask = dayAddedEvent && dayAddedEvent - 1;
 	const projectsSelectedString = projectsSelected.map((project) => project.name).join(", ");
+	const today = `${dayAddedEvent}/${currentMonth}/${currentYear}`;
 	return (
-		isShowAddTaskForm &&
+		isShowAddEventForm &&
 		indexOfTheDaySelectedForAddedTask !== null && (
 			<div className="flex flex-col bg-slate-50">
 				<table className="bg-white">
 					<thead>
 						<tr>
-							<th colSpan={4}>
+							<th colSpan={6}>
 								<div className="flex gap-3 justify-between items-center select-none">
-									<span>
-										{dayAddedTask}/{currentMonth}/{currentYear}
-									</span>
+									<span>Event(s) | {today}</span>
 									<div className="w-fit text-red-600 cursor-pointer p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
 										<div
 											className="rotate-45"
 											onClick={() => {
-												dispatch(setShowAddTaskForm(false));
+												dispatch(setShowAddEventForm(false));
 											}}>
 											<FaPlus />
 										</div>
@@ -51,19 +52,21 @@ function CreateEventForm() {
 							</th>
 						</tr>
 						<tr>
-							<th>At</th>
-							<th>Project(s)</th>
-							<th>Task</th>
+							<th>From</th>
+							<th>To</th>
+							<th>Name</th>
+							<th>Status</th>
+							<th>CreatedAt</th>
 							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
-						{dataTasks?.days[indexOfTheDaySelectedForAddedTask].tasks.map((task, index) => {
-							const isEditing = indexOfTheTaskSelectedForEdit === index;
+						{dataTasks?.days[indexOfTheDaySelectedForAddedTask].events.map((event: EventDay<string>, index) => {
+							const isEditing = indexOfTheEventSelectedForEdit === index;
 							return (
-								<tr key={task._id}>
-									<td>{task.createdAt}</td>
-									<td className="max-w-40">{task.project}</td>
+								<tr key={event._id}>
+									<td>{event.from}</td>
+									<td>{event.to}</td>
 									<td>
 										{isEditing ? (
 											<textarea
@@ -72,12 +75,16 @@ function CreateEventForm() {
 												onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
 													e.currentTarget.style.height = "5px";
 													e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
-													dispatch(setUpdateTaskValue(e.currentTarget.value));
+													dispatch(setUpdateEventValue(e.currentTarget.value));
 												}}
-												value={updateTaskValue ? updateTaskValue : task.name}></textarea>
+												value={updateEventValue ? updateEventValue : event.name}></textarea>
 										) : (
-											task.name
+											event.name
 										)}
+									</td>
+									<td>{event.status}</td>
+									<td>
+										{event.createdAtDay} - {event.createdAtTime}
 									</td>
 									<td>
 										<div className="flex gap-1 items-center justify-center">
@@ -86,20 +93,20 @@ function CreateEventForm() {
 													<div
 														className="text-red-600 p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500 cursor-pointer"
 														onClick={() => {
-															dispatch(setIndexOfTheTaskSelectedForEdit(null));
-															dispatch(setUpdateTaskValue(""));
+															dispatch(setIndexOfTheEventSelectedForEdit(null));
+															dispatch(setUpdateEventValue(""));
 														}}>
 														<div className="rotate-45">
 															<FaPlus />
 														</div>
 													</div>
 
-													{updateTaskValue && updateTaskValue !== task.name && (
+													{updateEventValue && updateEventValue !== event.name && (
 														<Fragment>
 															<div
 																className="text-yellow-600 p-1 rounded-sm cursor-pointer hover:outline-1 outline-0 outline outline-slate-500"
 																onClick={() => {
-																	dispatch(setUpdateTaskValue(task.name));
+																	dispatch(setUpdateEventValue(event.name));
 																}}>
 																<FaArrowRotateRight />
 															</div>
@@ -107,24 +114,24 @@ function CreateEventForm() {
 																className="w-fit p-1 rounded-sm text-green-600 cursor-pointer hover:outline-1 outline-0 outline outline-slate-500"
 																onClick={async () => {
 																	const record = {
-																		...task,
-																		name: updateTaskValue,
+																		...event,
+																		name: updateEventValue,
 																	};
 																	// @ts-ignore
 																	const { acknowledged } = await window.calendar.update({
-																		_id: task._id,
+																		_id: event._id,
 																		record,
 																	});
 																	if (acknowledged) {
-																		dispatch(
-																			updateTask({
-																				indexOfTheDaySelectedForUpdatedTask: indexOfTheDaySelectedForAddedTask,
-																				taskIndex: index,
-																				record,
-																			}),
-																		);
-																		dispatch(setUpdateTaskValue(""));
-																		dispatch(setIndexOfTheTaskSelectedForEdit(null));
+																		// dispatch(
+																		// 	updateEvent({
+																		// 		indexOfTheDaySelectedForUpdatedTask: indexOfTheDaySelectedForAddedTask,
+																		// 		taskIndex: index,
+																		// 		record,
+																		// 	}),
+																		// );
+																		dispatch(setUpdateEventValue(""));
+																		dispatch(setIndexOfTheEventSelectedForEdit(null));
 																	}
 																}}>
 																<FaSave />
@@ -135,7 +142,7 @@ function CreateEventForm() {
 														onClick={async () => {
 															// @ts-ignore
 															const { acknowledged } = await window.calendar.delete({
-																_id: task._id,
+																_id: event._id,
 															});
 															if (acknowledged) {
 																dispatch(
@@ -153,7 +160,7 @@ function CreateEventForm() {
 											) : (
 												<div
 													onClick={() => {
-														dispatch(setIndexOfTheTaskSelectedForEdit(index));
+														dispatch(setIndexOfTheEventSelectedForEdit(index));
 													}}
 													className="text-purple-600 cursor-pointer p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
 													<BiSolidEditAlt />
@@ -169,39 +176,49 @@ function CreateEventForm() {
 						<tr>
 							<td>
 								<div className="flex gap-1 items-center">
-									<TimeRunner />
-									<div className="text-blue-600">
-										<BsFillClockFill />
-									</div>
+									<input type="time" />
 								</div>
 							</td>
-							<td className="max-w-40">{projectsSelectedString}</td>
-							<td>{taskValue}</td>
+							<td>
+								<div className="flex gap-1 items-center">
+									<input type="time" />
+								</div>
+							</td>
+							<td>{eventValue}</td>
+							<td>
+								<select name="">
+									<option value="">None</option>
+									<option value="">Suspend</option>
+									<option value="">Done</option>
+								</select>
+							</td>
+							<td>{today}</td>
 							<td>
 								<div className="flex justify-center">
-									{taskValue && projectsSelectedString && (
+									{eventValue && (
 										<div
 											className="w-fit p-1 rounded-sm text-green-600 hover:outline-1 outline-0 outline outline-slate-500 cursor-pointer"
 											onClick={async () => {
-												if (taskValue.trim() !== "" && dayAddedTask) {
+												if (eventValue.trim() !== "" && dayAddedEvent) {
 													const {
 														record,
 														acknowledged,
 													}: // @ts-ignore
-													{ record: Task<string>; acknowledged: boolean } = await window.calendar.add({
-														day: dayAddedTask,
+													{ record: EventDay<string>; acknowledged: boolean } = await window.calendarEvent.create({
+														day: dayAddedEvent,
 														month: currentMonth,
 														record: {
-															project: projectsSelectedString,
-															name: taskValue,
+															from: "<?>",
+															to: "<?>",
+															name: eventValue,
 															status: "<?>",
-															createdAt: moment().format("HH:mm:ss"),
+															createdAtDay: today,
+															createdAtTime: moment().format("HH:mm:ss"),
 														},
 													});
 													if (acknowledged) {
-														dispatch(setTaskValue(""));
-														dispatch(clearProjectSelected());
-														dispatch(addTask({ indexOfTheDaySelectedForAddedTask, record }));
+														dispatch(setEventValue(""));
+														dispatch(addEvent({ indexOfTheDaySelectedForAddedTask, record }));
 													}
 												} else {
 													console.log("Missing data");
@@ -215,58 +232,15 @@ function CreateEventForm() {
 						</tr>
 					</tfoot>
 				</table>
-				<div className="flex flex-col gap-1 bg-white py-1">
-					{projectsSelected.length > 0 && (
-						<div className="flex items-center gap-1">
-							<div>Selected: </div>
-							<div className="flex gap-2 items-center flex-wrap">
-								{projectsSelected.map((project: Project, index) => {
-									return (
-										<div
-											key={"project-" + index}
-											className="bg-green-100 w-fit rounded-md whitespace-nowrap p-1 text-xs cursor-pointer border-[1px] border-green-600 select-none hover:bg-red-300 hover:border-red-600"
-											onClick={() => {
-												dispatch(removeProjectSelected(index));
-												dispatch(addProjectSourced(project));
-											}}>
-											<div className="flex items-center gap-2">
-												<div>{project.name}</div>
-											</div>
-										</div>
-									);
-								})}
-							</div>
-						</div>
-					)}
-					{projectsSource.length > 0 && (
-						<div className="flex items-center gap-1">
-							<div>Project(s): </div>
-							<div className="flex gap-2 items-center flex-wrap">
-								{projectsSource.map((project: Project, index) => {
-									return (
-										<div
-											key={"project-" + index}
-											className="w-fit rounded-md whitespace-nowrap p-1 text-xs cursor-pointer hover:bg-slate-100 border-[1px] border-slate-600 select-none"
-											onClick={() => {
-												dispatch(addProjectSelected(project));
-												dispatch(removeProjectSourced(index));
-											}}>
-											<div>{project.name}</div>
-										</div>
-									);
-								})}
-							</div>
-						</div>
-					)}
-				</div>
+
 				<textarea
 					className="resize-none min-h-20 overflow-hidden border-[1px] p-2"
 					onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
 						e.currentTarget.style.height = "5px";
 						e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
-						dispatch(setTaskValue(e.currentTarget.value));
+						dispatch(setEventValue(e.currentTarget.value));
 					}}
-					value={taskValue}></textarea>
+					value={eventValue}></textarea>
 			</div>
 		)
 	);

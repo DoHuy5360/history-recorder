@@ -3,7 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface CreateEventFormState {
 	isShowAddEventForm: boolean;
-	EventValue: string;
+	eventValue: string;
 	dayAddedEvent: null | number;
 	projectsSource: Project[];
 	projectsSelected: Project[];
@@ -13,7 +13,7 @@ interface CreateEventFormState {
 
 const initialState: CreateEventFormState = {
 	isShowAddEventForm: false,
-	EventValue: "",
+	eventValue: "",
 	dayAddedEvent: null,
 	projectsSource: [
 		{ _id: "0", name: "Other" },
@@ -34,7 +34,7 @@ export const slice = createSlice({
 	initialState,
 	reducers: {
 		setEventValue: (state, action: PayloadAction<string>) => {
-			state.EventValue = action.payload;
+			state.eventValue = action.payload;
 		},
 		setUpdateEventValue: (state, action: PayloadAction<string>) => {
 			state.updateEventValue = action.payload;
