@@ -1,33 +1,23 @@
-import { useCallback, useState, Fragment, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import "./_calendar.css";
-import moment, { months } from "moment";
+import moment from "moment";
 import { BiSolidEditAlt, BiSolidFlag } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 import { FcCloseUpMode } from "react-icons/fc";
 import Table from "../table/Table";
 
-import { setDayAddedTask, setAddingTaskTime, setShowAddTaskForm } from "../redux/reducers/_createTaskForm";
+import { setDayAddedTask, setShowAddTaskForm } from "../redux/reducers/_createTaskForm";
 import { setDataTasks, setStartDate, setEndDate } from "../redux/reducers/_calendar";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import CreateTaskForm from "../form/CreateTaskForm";
 import RangeOfEmptyDay from "./RangeOfEmptyDay";
-
-const currentMonthName = moment().format("MMMM");
-const currentMonth = moment().month() + 1;
-const currentDay = moment().date();
-const daysInMonth = moment().daysInMonth();
-const currentYear = moment().year();
-const arrayOfDays = Array.from({ length: daysInMonth }, (_, k) => ++k);
-
-const firstDateInMonth = moment(`${currentYear}-${currentMonth}-01`);
-const firstDayInWeek = firstDateInMonth.day();
-const numberOfEmptyCellsBeforeFirstDayOfTheMonth = firstDayInWeek === 0 ? 6 : firstDayInWeek - 1;
-const numberOfEmptyCellsAfterLastDayOfTheMonth = 35 - daysInMonth - numberOfEmptyCellsBeforeFirstDayOfTheMonth;
+import Navigate from "./Navigate";
 
 function View() {
 	const { isShowAddTaskForm, dayAddedTask } = useAppSelector((state) => state.createTaskFormReducer);
-	const { dataTasks, startDate, endDate } = useAppSelector((state) => state.calendarReducer);
+	const { dataTasks, startDate, endDate, currentDay, currentMonth, currentYear, currentMonthName, numberOfEmptyCellsAfterLastDayOfTheMonth, numberOfEmptyCellsBeforeFirstDayOfTheMonth } =
+		useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
 	useEffect(() => {
 		async function readCalendar() {
@@ -70,14 +60,7 @@ function View() {
 	);
 	return (
 		<div className="p-3">
-			<div className="flex border-b-[1px] border-slate-100">
-				<nav className="flex gap-2 px-2 bg-slate-100">
-					<Link to="/">calendar</Link>
-				</nav>
-				<nav className="flex gap-2 px-2">
-					<Link to="/">calendar</Link>
-				</nav>
-			</div>
+			<Navigate />
 			<div className="flex gap-2">
 				<div className="flex gap-1">
 					<div>Day: </div>

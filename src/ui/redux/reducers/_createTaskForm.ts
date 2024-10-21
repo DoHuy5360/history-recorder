@@ -5,7 +5,6 @@ interface CreateTaskFormState {
 	isShowAddTaskForm: boolean;
 	taskValue: string;
 	dayAddedTask: null | number;
-	addingTaskTime: string;
 	projectsSource: Project[];
 	projectsSelected: Project[];
 	indexOfTheTaskSelectedForEdit: null | number;
@@ -16,7 +15,6 @@ const initialState: CreateTaskFormState = {
 	isShowAddTaskForm: false,
 	taskValue: "",
 	dayAddedTask: null,
-	addingTaskTime: "",
 	projectsSource: [
 		{ _id: "0", name: "Other" },
 		{ _id: "1", name: "Course Learning Outcomes" },
@@ -47,9 +45,6 @@ export const slice = createSlice({
 		setShowAddTaskForm: (state, action: PayloadAction<boolean>) => {
 			state.isShowAddTaskForm = action.payload;
 		},
-		setAddingTaskTime: (state, action: PayloadAction<string>) => {
-			state.addingTaskTime = action.payload;
-		},
 		addProjectSourced: (state, action: PayloadAction<Project>) => {
 			state.projectsSource.push(action.payload);
 		},
@@ -75,7 +70,6 @@ export const {
 	setTaskValue,
 	setDayAddedTask,
 	setShowAddTaskForm,
-	setAddingTaskTime,
 	addProjectSelected,
 	removeProjectSelected,
 	addProjectSourced,

@@ -21,10 +21,8 @@ import { FaArrowRotateRight } from "react-icons/fa6";
 import { Fragment } from "react/jsx-runtime";
 
 function CreateTaskForm() {
-	const { taskValue, dayAddedTask, isShowAddTaskForm, addingTaskTime, projectsSource, projectsSelected, indexOfTheTaskSelectedForEdit, updateTaskValue } = useAppSelector(
-		(state) => state.createTaskFormReducer,
-	);
-	const { dataTasks, currentMonth, currentDay, daysInMonth, currentYear } = useAppSelector((state) => state.calendarReducer);
+	const { taskValue, dayAddedTask, isShowAddTaskForm, projectsSource, projectsSelected, indexOfTheTaskSelectedForEdit, updateTaskValue } = useAppSelector((state) => state.createTaskFormReducer);
+	const { dataTasks, currentMonth, currentYear } = useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
 	const indexOfTheDaySelectedForAddedTask = dayAddedTask && dayAddedTask - 1;
 	const projectsSelectedString = projectsSelected.map((project) => project.name).join(", ");

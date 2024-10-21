@@ -5,7 +5,7 @@ import moment from "moment";
 
 function Table() {
 	const isShowStatusColumn = useAppSelector((state) => state.rootReducer.isShowStatusColumn);
-	const { dataTasks, startDate, endDate, currentMonth, currentDay, daysInMonth, currentYear } = useAppSelector((state) => state.calendarReducer);
+	const { dataTasks, startDate, endDate, currentMonth, currentYear } = useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
 	let numberOfTasksSelected = 0;
 	let numberOfSelectedDaysHasTask = 0;

@@ -5,21 +5,35 @@ import moment from "moment";
 interface CalendarState {
 	currentMonth: number;
 	currentDay: number;
-	daysInMonth: number;
 	currentYear: number;
 	dataTasks: null | Month<string>;
 	startDate: null | number;
 	endDate: null | number;
+	currentMonthName: string;
+	numberOfEmptyCellsBeforeFirstDayOfTheMonth: number;
+	numberOfEmptyCellsAfterLastDayOfTheMonth: number;
 }
+const thisMoment = moment();
+const currentMonthName = thisMoment.format("MMMM");
+const currentMonth = thisMoment.month() + 1;
+const currentDay = thisMoment.date();
+const daysInMonth = thisMoment.daysInMonth();
+const currentYear = thisMoment.year();
+const firstDateInMonth = moment(`${currentYear}-${currentMonth}-01`);
+const firstDayInWeek = firstDateInMonth.day();
+const numberOfEmptyCellsBeforeFirstDayOfTheMonth = firstDayInWeek === 0 ? 6 : firstDayInWeek - 1;
+const numberOfEmptyCellsAfterLastDayOfTheMonth = 35 - daysInMonth - numberOfEmptyCellsBeforeFirstDayOfTheMonth;
 
 const initialState: CalendarState = {
-	currentMonth: moment().month() + 1,
-	currentDay: moment().date(),
-	daysInMonth: moment().daysInMonth(),
-	currentYear: moment().year(),
+	currentMonth,
+	currentDay,
+	currentYear,
+	currentMonthName,
 	dataTasks: null,
 	startDate: null,
 	endDate: null,
+	numberOfEmptyCellsBeforeFirstDayOfTheMonth,
+	numberOfEmptyCellsAfterLastDayOfTheMonth,
 };
 
 export const slice = createSlice({
