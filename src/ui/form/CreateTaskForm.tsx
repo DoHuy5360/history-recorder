@@ -42,6 +42,7 @@ function CreateTaskForm() {
 										<div
 											className="rotate-45"
 											onClick={() => {
+												dispatch(setIndexOfTheTaskSelectedForEdit(null));
 												dispatch(setShowAddTaskForm(false));
 											}}>
 											<FaPlus />

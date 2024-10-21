@@ -149,6 +149,22 @@ app.on("ready", async () => {
 		return { acknowledged };
 	});
 
+	ipcMain.handle("calendarEvent:delete", async (e, data: { _id: string }) => {
+		console.log("Request delete event by id: ", data._id);
+		const { acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId } = await db.tasksCollection.updateOne(
+			{ "months.days.events._id": ObjectId.createFromHexString(data._id) },
+			{
+				$pull: {
+					"months.$[].days.$[].events": {
+						_id: ObjectId.createFromHexString(data._id),
+					},
+				},
+			},
+		);
+		console.log(acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId);
+		return { acknowledged };
+	});
+
 	ipcMain.on("frame:grow", () => {
 		const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 		mainWin.setSize(width, height, true);

@@ -7,14 +7,14 @@ import { FaPlus, FaStar } from "react-icons/fa";
 import { FcCloseUpMode } from "react-icons/fc";
 import Table from "../table/Table";
 
-import { setDayAddedTask, setShowAddTaskForm } from "../redux/reducers/_createTaskForm";
+import { setDayAddedTask, setIndexOfTheTaskSelectedForEdit, setShowAddTaskForm } from "../redux/reducers/_createTaskForm";
 import { setDataTasks, setStartDate, setEndDate } from "../redux/reducers/_calendar";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import CreateTaskForm from "../form/CreateTaskForm";
 import RangeOfEmptyDay from "./RangeOfEmptyDay";
 import Navigate from "./Navigate";
 import CreateEventForm from "../form/CreateEventForm";
-import { setDayAddedEvent, setShowAddEventForm } from "../redux/reducers/_createEventForm";
+import { setDayAddedEvent, setIndexOfTheEventSelectedForEdit, setShowAddEventForm } from "../redux/reducers/_createEventForm";
 
 function View() {
 	const { isShowAddTaskForm, dayAddedTask } = useAppSelector((state) => state.createTaskFormReducer);
@@ -155,6 +155,8 @@ function View() {
 													dispatch(setShowAddEventForm(true));
 													dispatch(setDayAddedTask(day.day));
 													dispatch(setDayAddedEvent(day.day));
+													dispatch(setIndexOfTheTaskSelectedForEdit(null));
+													dispatch(setIndexOfTheEventSelectedForEdit(null));
 												}}>
 												<FaPlus />
 											</div>

@@ -70,6 +70,15 @@ export const slice = createSlice({
 		) => {
 			state.dataTasks?.days[action.payload.indexOfTheDaySelectedForRemovedTask].tasks.splice(action.payload.taskIndex, 1);
 		},
+		deleteEvent: (
+			state,
+			action: PayloadAction<{
+				indexOfTheDaySelectedForRemovedEvent: number;
+				eventIndex: number;
+			}>,
+		) => {
+			state.dataTasks?.days[action.payload.indexOfTheDaySelectedForRemovedEvent].events.splice(action.payload.eventIndex, 1);
+		},
 		updateTask: (
 			state,
 			action: PayloadAction<{
@@ -99,6 +108,6 @@ export const slice = createSlice({
 	},
 });
 
-export const { setDataTasks, setStartDate, setEndDate, addTask, removeTask, updateTask, addEvent, updateEvent } = slice.actions;
+export const { setDataTasks, setStartDate, setEndDate, addTask, removeTask, updateTask, addEvent, updateEvent, deleteEvent } = slice.actions;
 
 export default slice.reducer;

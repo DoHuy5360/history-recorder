@@ -11,7 +11,7 @@ import {
 	setUpdateEventValue,
 	clearProjectSelected,
 } from "../redux/reducers/_createEventForm";
-import { addEvent, addTask, removeTask, updateEvent, updateTask } from "../redux/reducers/_calendar";
+import { addEvent, addTask, deleteEvent, removeTask, updateEvent, updateTask } from "../redux/reducers/_calendar";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import TimeRunner from "./TimeRunner";
@@ -43,6 +43,7 @@ function CreateEventForm() {
 										<div
 											className="rotate-45"
 											onClick={() => {
+												dispatch(setIndexOfTheEventSelectedForEdit(null));
 												dispatch(setShowAddEventForm(false));
 											}}>
 											<FaPlus />
@@ -77,7 +78,7 @@ function CreateEventForm() {
 													e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
 													dispatch(setUpdateEventValue(e.currentTarget.value));
 												}}
-												value={updateEventValue ? updateEventValue : event.name}></textarea>
+												value={updateEventValue}></textarea>
 										) : (
 											event.name
 										)}
@@ -101,7 +102,7 @@ function CreateEventForm() {
 														</div>
 													</div>
 
-													{updateEventValue && updateEventValue !== event.name && (
+													{updateEventValue !== event.name && (
 														<Fragment>
 															<div
 																className="text-yellow-600 p-1 rounded-sm cursor-pointer hover:outline-1 outline-0 outline outline-slate-500"
@@ -141,14 +142,14 @@ function CreateEventForm() {
 													<div
 														onClick={async () => {
 															// @ts-ignore
-															const { acknowledged } = await window.calendar.delete({
+															const { acknowledged } = await window.calendarEvent.delete({
 																_id: event._id,
 															});
 															if (acknowledged) {
 																dispatch(
-																	removeTask({
-																		indexOfTheDaySelectedForRemovedTask: indexOfTheDaySelectedForAddedEvent,
-																		taskIndex: index,
+																	deleteEvent({
+																		indexOfTheDaySelectedForRemovedEvent: indexOfTheDaySelectedForAddedEvent,
+																		eventIndex: index,
 																	}),
 																);
 															}
@@ -160,6 +161,7 @@ function CreateEventForm() {
 											) : (
 												<div
 													onClick={() => {
+														dispatch(setUpdateEventValue(event.name));
 														dispatch(setIndexOfTheEventSelectedForEdit(index));
 													}}
 													className="text-purple-600 cursor-pointer p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
