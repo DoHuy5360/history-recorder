@@ -74,6 +74,7 @@ app.on("ready", async () => {
 		};
 	});
 	ipcMain.handle("calendarEvent:create", async (e, data) => {
+		console.log(data);
 		const monthIndex = data.month - 1;
 		const _id = new ObjectId();
 		const { acknowledged } = await db.tasksCollection.updateOne(
@@ -95,7 +96,6 @@ app.on("ready", async () => {
 
 	ipcMain.handle("calendar:update", async (e, data: { _id: string; record: any }) => {
 		console.log("Request update task by id: ", data._id);
-		const taskIndex = data;
 		const { acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId } = await db.tasksCollection.updateOne(
 			{ "months.days.tasks._id": ObjectId.createFromHexString(data._id) },
 			{
@@ -108,6 +108,25 @@ app.on("ready", async () => {
 			},
 			{
 				arrayFilters: [{ "task._id": ObjectId.createFromHexString(data._id) }],
+			},
+		);
+		console.log(acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId);
+		return { acknowledged };
+	});
+	ipcMain.handle("calendarEvent:update", async (e, data: { _id: string; record: any }) => {
+		console.log("Request update event by id: ", data._id);
+		const { acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId } = await db.tasksCollection.updateOne(
+			{ "months.days.events._id": ObjectId.createFromHexString(data._id) },
+			{
+				$set: {
+					// [`months.$[].days.$[].events.$[].project`]: "<New Project Name>",
+					[`months.$[].days.$[].events.$[event].name`]: data.record.name,
+					// [`months.$[].days.$[].events.$[].status`]: "<New Status>",
+					// [`months.$[].days.$[].events.$[].createdAt`]: "<New Time>",
+				},
+			},
+			{
+				arrayFilters: [{ "event._id": ObjectId.createFromHexString(data._id) }],
 			},
 		);
 		console.log(acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId);

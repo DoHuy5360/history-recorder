@@ -11,7 +11,7 @@ import {
 	setUpdateEventValue,
 	clearProjectSelected,
 } from "../redux/reducers/_createEventForm";
-import { addEvent, addTask, removeTask, updateTask } from "../redux/reducers/_calendar";
+import { addEvent, addTask, removeTask, updateEvent, updateTask } from "../redux/reducers/_calendar";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import TimeRunner from "./TimeRunner";
@@ -26,12 +26,12 @@ function CreateEventForm() {
 	);
 	const { dataTasks, currentMonth, currentYear } = useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
-	const indexOfTheDaySelectedForAddedTask = dayAddedEvent && dayAddedEvent - 1;
+	const indexOfTheDaySelectedForAddedEvent = dayAddedEvent && dayAddedEvent - 1;
 	const projectsSelectedString = projectsSelected.map((project) => project.name).join(", ");
 	const today = `${dayAddedEvent}/${currentMonth}/${currentYear}`;
 	return (
 		isShowAddEventForm &&
-		indexOfTheDaySelectedForAddedTask !== null && (
+		indexOfTheDaySelectedForAddedEvent !== null && (
 			<div className="flex flex-col bg-slate-50">
 				<table className="bg-white">
 					<thead>
@@ -61,7 +61,7 @@ function CreateEventForm() {
 						</tr>
 					</thead>
 					<tbody>
-						{dataTasks?.days[indexOfTheDaySelectedForAddedTask].events.map((event: EventDay<string>, index) => {
+						{dataTasks?.days[indexOfTheDaySelectedForAddedEvent].events.map((event: EventDay<string>, index) => {
 							const isEditing = indexOfTheEventSelectedForEdit === index;
 							return (
 								<tr key={event._id}>
@@ -118,18 +118,18 @@ function CreateEventForm() {
 																		name: updateEventValue,
 																	};
 																	// @ts-ignore
-																	const { acknowledged } = await window.calendar.update({
+																	const { acknowledged } = await window.calendarEvent.update({
 																		_id: event._id,
 																		record,
 																	});
 																	if (acknowledged) {
-																		// dispatch(
-																		// 	updateEvent({
-																		// 		indexOfTheDaySelectedForUpdatedTask: indexOfTheDaySelectedForAddedTask,
-																		// 		taskIndex: index,
-																		// 		record,
-																		// 	}),
-																		// );
+																		dispatch(
+																			updateEvent({
+																				indexOfTheDaySelectedForUpdatedEvent: indexOfTheDaySelectedForAddedEvent,
+																				eventIndex: index,
+																				record,
+																			}),
+																		);
 																		dispatch(setUpdateEventValue(""));
 																		dispatch(setIndexOfTheEventSelectedForEdit(null));
 																	}
@@ -147,7 +147,7 @@ function CreateEventForm() {
 															if (acknowledged) {
 																dispatch(
 																	removeTask({
-																		indexOfTheDaySelectedForRemovedTask: indexOfTheDaySelectedForAddedTask,
+																		indexOfTheDaySelectedForRemovedTask: indexOfTheDaySelectedForAddedEvent,
 																		taskIndex: index,
 																	}),
 																);
@@ -218,7 +218,7 @@ function CreateEventForm() {
 													});
 													if (acknowledged) {
 														dispatch(setEventValue(""));
-														dispatch(addEvent({ indexOfTheDaySelectedForAddedTask, record }));
+														dispatch(addEvent({ indexOfTheDaySelectedForAddedEvent, record }));
 													}
 												} else {
 													console.log("Missing data");
