@@ -4,14 +4,14 @@ import {
 	setTaskValue,
 	setShowAddTaskForm,
 	setIndexOfTheTaskSelectedForEdit,
-	removeProjectSelected,
+	deleteProjectSelected,
 	addProjectSelected,
 	addProjectSourced,
-	removeProjectSourced,
+	deleteProjectSourced,
 	setUpdateTaskValue,
 	clearProjectSelected,
 } from "../redux/reducers/_createTaskForm";
-import { addTask, removeTask, updateTask } from "../redux/reducers/_calendar";
+import { addTask, deleteTask, updateTask } from "../redux/reducers/_calendar";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import TimeRunner from "./TimeRunner";
@@ -112,7 +112,7 @@ function CreateTaskForm() {
 																		name: updateTaskValue,
 																	};
 																	// @ts-ignore
-																	const { acknowledged } = await window.calendar.update({
+																	const { acknowledged } = await window.calendarTask.update({
 																		_id: task._id,
 																		record,
 																	});
@@ -135,13 +135,13 @@ function CreateTaskForm() {
 													<div
 														onClick={async () => {
 															// @ts-ignore
-															const { acknowledged } = await window.calendar.delete({
+															const { acknowledged } = await window.calendarTask.delete({
 																_id: task._id,
 															});
 															if (acknowledged) {
 																dispatch(
-																	removeTask({
-																		indexOfTheDaySelectedForRemovedTask: indexOfTheDaySelectedForAddedTask,
+																	deleteTask({
+																		indexOfTheDaySelectedFordeletedTask: indexOfTheDaySelectedForAddedTask,
 																		taskIndex: index,
 																	}),
 																);
@@ -189,7 +189,7 @@ function CreateTaskForm() {
 														record,
 														acknowledged,
 													}: // @ts-ignore
-													{ record: Task<string>; acknowledged: boolean } = await window.calendar.add({
+													{ record: Task<string>; acknowledged: boolean } = await window.calendarTask.create({
 														day: dayAddedTask,
 														month: currentMonth,
 														record: {
@@ -200,6 +200,7 @@ function CreateTaskForm() {
 														},
 													});
 													if (acknowledged) {
+														dispatch(setIndexOfTheTaskSelectedForEdit(null));
 														dispatch(setTaskValue(""));
 														dispatch(clearProjectSelected());
 														dispatch(addTask({ indexOfTheDaySelectedForAddedTask, record }));
@@ -227,7 +228,7 @@ function CreateTaskForm() {
 											key={"project-" + index}
 											className="bg-green-100 w-fit rounded-md whitespace-nowrap p-1 text-xs cursor-pointer border-[1px] border-green-600 select-none hover:bg-red-300 hover:border-red-600"
 											onClick={() => {
-												dispatch(removeProjectSelected(index));
+												dispatch(deleteProjectSelected(index));
 												dispatch(addProjectSourced(project));
 											}}>
 											<div className="flex items-center gap-2">
@@ -250,7 +251,7 @@ function CreateTaskForm() {
 											className="w-fit rounded-md whitespace-nowrap p-1 text-xs cursor-pointer hover:bg-slate-100 border-[1px] border-slate-600 select-none"
 											onClick={() => {
 												dispatch(addProjectSelected(project));
-												dispatch(removeProjectSourced(index));
+												dispatch(deleteProjectSourced(index));
 											}}>
 											<div>{project.name}</div>
 										</div>

@@ -33,7 +33,7 @@ app.on("ready", async () => {
 	if (!db.isConnected) {
 		await db.connect();
 	}
-	ipcMain.handle("calendar:read", async (e, data) => {
+	ipcMain.handle("calendarTask:read", async (e, data) => {
 		const calendar: DataTask<ObjectId | string> | null = await db.tasksCollection.findOne({
 			account: new ObjectId("671283cef34eba01f0ec96eb"),
 		});
@@ -53,7 +53,7 @@ app.on("ready", async () => {
 			data: calendar?.months[data.month - 1],
 		};
 	});
-	ipcMain.handle("calendar:add", async (e, data) => {
+	ipcMain.handle("calendarTask:create", async (e, data) => {
 		console.log(data);
 		const monthIndex = data.month - 1;
 		const _id = new ObjectId();
@@ -94,7 +94,7 @@ app.on("ready", async () => {
 		};
 	});
 
-	ipcMain.handle("calendar:update", async (e, data: { _id: string; record: any }) => {
+	ipcMain.handle("calendarTask:update", async (e, data: { _id: string; record: any }) => {
 		console.log("Request update task by id: ", data._id);
 		const { acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId } = await db.tasksCollection.updateOne(
 			{ "months.days.tasks._id": ObjectId.createFromHexString(data._id) },
@@ -133,7 +133,7 @@ app.on("ready", async () => {
 		return { acknowledged };
 	});
 
-	ipcMain.handle("calendar:delete", async (e, data: { _id: string }) => {
+	ipcMain.handle("calendarTask:delete", async (e, data: { _id: string }) => {
 		console.log("Request delete task by id: ", data._id);
 		const { acknowledged, modifiedCount, matchedCount, upsertedCount, upsertedId } = await db.tasksCollection.updateOne(
 			{ "months.days.tasks._id": ObjectId.createFromHexString(data._id) },

@@ -9,11 +9,11 @@ contextBridge.exposeInMainWorld("electron", {
 	fetch: () => ipcRenderer.invoke("fetch"),
 } satisfies Window["electron"]);
 
-contextBridge.exposeInMainWorld("calendar", {
-	read: (data: any) => ipcRenderer.invoke("calendar:read", data),
-	add: (data: any) => ipcRenderer.invoke("calendar:add", data),
-	update: (data: any) => ipcRenderer.invoke("calendar:update", data),
-	delete: (data: any) => ipcRenderer.invoke("calendar:delete", data),
+contextBridge.exposeInMainWorld("calendarTask", {
+	read: (data: any) => ipcRenderer.invoke("calendarTask:read", data),
+	create: (data: any) => ipcRenderer.invoke("calendarTask:create", data),
+	update: (data: any) => ipcRenderer.invoke("calendarTask:update", data),
+	delete: (data: any) => ipcRenderer.invoke("calendarTask:delete", data),
 });
 
 contextBridge.exposeInMainWorld("calendarEvent", {

@@ -61,23 +61,23 @@ export const slice = createSlice({
 		) => {
 			state.dataTasks?.days[action.payload.indexOfTheDaySelectedForAddedEvent].events.push(action.payload.record);
 		},
-		removeTask: (
+		deleteTask: (
 			state,
 			action: PayloadAction<{
-				indexOfTheDaySelectedForRemovedTask: number;
+				indexOfTheDaySelectedFordeletedTask: number;
 				taskIndex: number;
 			}>,
 		) => {
-			state.dataTasks?.days[action.payload.indexOfTheDaySelectedForRemovedTask].tasks.splice(action.payload.taskIndex, 1);
+			state.dataTasks?.days[action.payload.indexOfTheDaySelectedFordeletedTask].tasks.splice(action.payload.taskIndex, 1);
 		},
 		deleteEvent: (
 			state,
 			action: PayloadAction<{
-				indexOfTheDaySelectedForRemovedEvent: number;
+				indexOfTheDaySelectedFordeletedEvent: number;
 				eventIndex: number;
 			}>,
 		) => {
-			state.dataTasks?.days[action.payload.indexOfTheDaySelectedForRemovedEvent].events.splice(action.payload.eventIndex, 1);
+			state.dataTasks?.days[action.payload.indexOfTheDaySelectedFordeletedEvent].events.splice(action.payload.eventIndex, 1);
 		},
 		updateTask: (
 			state,
@@ -108,6 +108,6 @@ export const slice = createSlice({
 	},
 });
 
-export const { setDataTasks, setStartDate, setEndDate, addTask, removeTask, updateTask, addEvent, updateEvent, deleteEvent } = slice.actions;
+export const { setDataTasks, setStartDate, setEndDate, addTask, deleteTask, updateTask, addEvent, updateEvent, deleteEvent } = slice.actions;
 
 export default slice.reducer;

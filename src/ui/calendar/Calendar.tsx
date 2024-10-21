@@ -25,7 +25,7 @@ function View() {
 	useEffect(() => {
 		async function readCalendar() {
 			// @ts-ignore
-			const data = await window.calendar.read({ month: currentMonth });
+			const data = await window.calendarTask.read({ month: currentMonth });
 			dispatch(setDataTasks(data.data));
 		}
 		readCalendar();

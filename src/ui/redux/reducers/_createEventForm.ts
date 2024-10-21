@@ -48,13 +48,13 @@ export const slice = createSlice({
 		addProjectSourced: (state, action: PayloadAction<Project>) => {
 			state.projectsSource.push(action.payload);
 		},
-		removeProjectSourced: (state, action: PayloadAction<number>) => {
+		deleteProjectSourced: (state, action: PayloadAction<number>) => {
 			state.projectsSource.splice(action.payload, 1);
 		},
 		addProjectSelected: (state, action: PayloadAction<Project>) => {
 			state.projectsSelected.push(action.payload);
 		},
-		removeProjectSelected: (state, action: PayloadAction<number>) => {
+		deleteProjectSelected: (state, action: PayloadAction<number>) => {
 			state.projectsSelected.splice(action.payload, 1);
 		},
 		clearProjectSelected: (state) => {
@@ -71,9 +71,9 @@ export const {
 	setDayAddedEvent,
 	setShowAddEventForm,
 	addProjectSelected,
-	removeProjectSelected,
+	deleteProjectSelected,
 	addProjectSourced,
-	removeProjectSourced,
+	deleteProjectSourced,
 	setIndexOfTheEventSelectedForEdit,
 	setUpdateEventValue,
 	clearProjectSelected,

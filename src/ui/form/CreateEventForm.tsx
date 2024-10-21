@@ -4,18 +4,16 @@ import {
 	setEventValue,
 	setShowAddEventForm,
 	setIndexOfTheEventSelectedForEdit,
-	removeProjectSelected,
+	deleteProjectSelected,
 	addProjectSelected,
 	addProjectSourced,
-	removeProjectSourced,
+	deleteProjectSourced,
 	setUpdateEventValue,
 	clearProjectSelected,
 } from "../redux/reducers/_createEventForm";
-import { addEvent, addTask, deleteEvent, removeTask, updateEvent, updateTask } from "../redux/reducers/_calendar";
+import { addEvent, deleteEvent, updateEvent } from "../redux/reducers/_calendar";
 import { BiSolidEditAlt } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
-import TimeRunner from "./TimeRunner";
-import { BsFillClockFill } from "react-icons/bs";
 import moment from "moment";
 import { FaArrowRotateRight } from "react-icons/fa6";
 import { Fragment } from "react/jsx-runtime";
@@ -148,7 +146,7 @@ function CreateEventForm() {
 															if (acknowledged) {
 																dispatch(
 																	deleteEvent({
-																		indexOfTheDaySelectedForRemovedEvent: indexOfTheDaySelectedForAddedEvent,
+																		indexOfTheDaySelectedFordeletedEvent: indexOfTheDaySelectedForAddedEvent,
 																		eventIndex: index,
 																	}),
 																);
@@ -219,6 +217,7 @@ function CreateEventForm() {
 														},
 													});
 													if (acknowledged) {
+														dispatch(setIndexOfTheEventSelectedForEdit(null));
 														dispatch(setEventValue(""));
 														dispatch(addEvent({ indexOfTheDaySelectedForAddedEvent, record }));
 													}
