@@ -10,6 +10,8 @@ import {
 	deleteProjectSourced,
 	setUpdateEventValue,
 	clearProjectSelected,
+	setUpdateEventFrom,
+	setUpdateEventTo,
 } from "../redux/reducers/_createEventForm";
 import { addEvent, deleteEvent, updateEvent } from "../redux/reducers/_calendar";
 import { BiSolidEditAlt } from "react-icons/bi";
@@ -19,7 +21,7 @@ import { FaArrowRotateRight } from "react-icons/fa6";
 import { Fragment } from "react/jsx-runtime";
 
 function CreateEventForm() {
-	const { eventValue, dayAddedEvent, isShowAddEventForm, projectsSource, projectsSelected, indexOfTheEventSelectedForEdit, updateEventValue } = useAppSelector(
+	const { eventValue, dayAddedEvent, isShowAddEventForm, projectsSource, projectsSelected, indexOfTheEventSelectedForEdit, updateEventValue, updateEventFrom, updateEventTo } = useAppSelector(
 		(state) => state.createEventFormReducer,
 	);
 	const { dataTasks, currentMonth, currentYear } = useAppSelector((state) => state.calendarReducer);
@@ -176,12 +178,24 @@ function CreateEventForm() {
 						<tr>
 							<td>
 								<div className="flex gap-1 items-center">
-									<input type="time" />
+									<input
+										type="time"
+										value={updateEventFrom}
+										onChange={(e) => {
+											dispatch(setUpdateEventFrom(e.currentTarget.value));
+										}}
+									/>
 								</div>
 							</td>
 							<td>
 								<div className="flex gap-1 items-center">
-									<input type="time" />
+									<input
+										type="time"
+										value={updateEventTo}
+										onChange={(e) => {
+											dispatch(setUpdateEventTo(e.currentTarget.value));
+										}}
+									/>
 								</div>
 							</td>
 							<td>{eventValue}</td>
@@ -208,8 +222,8 @@ function CreateEventForm() {
 														day: dayAddedEvent,
 														month: currentMonth,
 														record: {
-															from: "<?>",
-															to: "<?>",
+															from: updateEventFrom,
+															to: updateEventTo,
 															name: eventValue,
 															status: "<?>",
 															createdAtDay: today,

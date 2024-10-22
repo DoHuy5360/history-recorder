@@ -9,6 +9,8 @@ interface CreateEventFormState {
 	projectsSelected: Project[];
 	indexOfTheEventSelectedForEdit: null | number;
 	updateEventValue: string;
+	updateEventFrom: string;
+	updateEventTo: string;
 }
 
 const initialState: CreateEventFormState = {
@@ -27,6 +29,8 @@ const initialState: CreateEventFormState = {
 	projectsSelected: [],
 	indexOfTheEventSelectedForEdit: null,
 	updateEventValue: "",
+	updateEventFrom: "",
+	updateEventTo: "",
 };
 
 export const slice = createSlice({
@@ -63,6 +67,12 @@ export const slice = createSlice({
 		setIndexOfTheEventSelectedForEdit: (state, action: PayloadAction<number | null>) => {
 			state.indexOfTheEventSelectedForEdit = action.payload;
 		},
+		setUpdateEventFrom: (state, action: PayloadAction<string>) => {
+			state.updateEventFrom = action.payload;
+		},
+		setUpdateEventTo: (state, action: PayloadAction<string>) => {
+			state.updateEventTo = action.payload;
+		},
 	},
 });
 
@@ -77,6 +87,8 @@ export const {
 	setIndexOfTheEventSelectedForEdit,
 	setUpdateEventValue,
 	clearProjectSelected,
+	setUpdateEventFrom,
+	setUpdateEventTo,
 } = slice.actions;
 
 export default slice.reducer;

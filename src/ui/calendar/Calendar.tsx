@@ -78,7 +78,7 @@ function View() {
 					<div>{currentYear}</div>
 				</div>
 			</div>
-			<div className="grid grid-cols-7 gap-[1px] bg-slate-100 border-slate-100 border-[1px]">
+			<div className="grid grid-cols-7 gap-[1px] bg-slate-100 border-slate-100 border-[1px] select-none">
 				<div className="p-2 cell_month_name">{currentMonthName}</div>
 				<div className="p-2 bg-slate-50">T2</div>
 				<div className="p-2 bg-slate-50">T3</div>
@@ -105,7 +105,7 @@ function View() {
 								key={index}
 								className={`${isToday && ""}
 							${
-								isDaysBetweenStartAndEnd ? `bg-yellow-100` : day.day !== startDate && day.day !== endDate && "bg-white"
+								isDaysBetweenStartAndEnd ? "bg-yellow-100" : day.day !== startDate && day.day !== endDate && "bg-white"
 							} h-full p-2 select-non outline outline-0 outline-slate-400 hover:outline-1 cursor-pointer transition-colors ease-in-out duration-100
 							${isStartDay && "bg-green-100"}
 							${isEndDay && "bg-blue-100"}
