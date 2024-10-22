@@ -87,14 +87,17 @@ function CreateEventForm() {
 									</td>
 									<td>
 										<textarea
-											className="resize-none min-h-20 overflow-hidden border-[1px] p-2 w-full"
+											className="resize-none overflow-hidden border-[1px] p-2 w-full"
+											value={updateEventValue}
 											autoFocus={isEditing}
+											onFocus={(e) => {
+												e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+											}}
 											onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
 												e.currentTarget.style.height = "5px";
 												e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
 												dispatch(setUpdateEventValue(e.currentTarget.value));
-											}}
-											value={updateEventValue}></textarea>
+											}}></textarea>
 									</td>
 									<td>{event.status}</td>
 									<td>
@@ -113,7 +116,7 @@ function CreateEventForm() {
 												</div>
 											</div>
 
-											{updateEventValue !== event.name && (
+											{isEditing && (
 												<Fragment>
 													<div
 														className="text-yellow-600 p-1 rounded-sm cursor-pointer hover:outline-1 outline-0 outline outline-slate-500"
@@ -188,6 +191,8 @@ function CreateEventForm() {
 												onClick={() => {
 													dispatch(setUpdateEventValue(event.name));
 													dispatch(setIndexOfTheEventSelectedForEdit(index));
+													dispatch(setUpdateEventFrom(event.from));
+													dispatch(setUpdateEventTo(event.to));
 												}}
 												className="text-purple-600 cursor-pointer p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
 												<BiSolidEditAlt />
@@ -222,7 +227,16 @@ function CreateEventForm() {
 									/>
 								</div>
 							</td>
-							<td>{eventValue}</td>
+							<td>
+								<textarea
+									className="resize-none overflow-hidden border-[1px] p-2 w-full"
+									value={eventValue}
+									onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
+										e.currentTarget.style.height = "5px";
+										e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+										dispatch(setEventValue(e.currentTarget.value));
+									}}></textarea>
+							</td>
 							<td>
 								<select name="">
 									<option value="">None</option>
@@ -246,8 +260,8 @@ function CreateEventForm() {
 														day: dayAddedEvent,
 														month: currentMonth,
 														record: {
-															from: updateEventFrom,
-															to: updateEventTo,
+															from: eventFrom,
+															to: eventTo,
 															name: eventValue,
 															status: "<?>",
 															createdAtDay: today,
@@ -271,15 +285,6 @@ function CreateEventForm() {
 						</tr>
 					</tfoot>
 				</table>
-
-				<textarea
-					className="resize-none min-h-20 overflow-hidden border-[1px] p-2"
-					onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
-						e.currentTarget.style.height = "5px";
-						e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
-						dispatch(setEventValue(e.currentTarget.value));
-					}}
-					value={eventValue}></textarea>
 			</div>
 		)
 	);

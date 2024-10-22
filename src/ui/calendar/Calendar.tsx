@@ -15,6 +15,7 @@ import RangeOfEmptyDay from "./RangeOfEmptyDay";
 import Navigate from "./Navigate";
 import CreateEventForm from "../form/CreateEventForm";
 import { setDayAddedEvent, setIndexOfTheEventSelectedForEdit, setShowAddEventForm } from "../redux/reducers/_createEventForm";
+import { SiTask } from "react-icons/si";
 
 function View() {
 	const { isShowAddTaskForm, dayAddedTask } = useAppSelector((state) => state.createTaskFormReducer);
@@ -96,6 +97,7 @@ function View() {
 						const isToday = day.day === currentDay;
 						const isSunday = dayInWeek === 0;
 						const numberOfTasks = day.tasks.length;
+						const numberOfEvents = day.events.length;
 						const isStartDay = startDate === day.day;
 						const isEndDay = endDate === day.day;
 						const isDaysBetweenStartAndEnd = startDate && endDate && day.day > startDate && day.day < endDate;
@@ -115,8 +117,17 @@ function View() {
 									gridColumn: dayInWeek,
 									transitionDelay: isStartDay || isEndDay ? "0ms" : `${day.day}0ms`,
 								}}
-								onClick={() => {
+								onContextMenu={() => {
 									handleSelectDays(day.day);
+								}}
+								onClick={(e) => {
+									e.stopPropagation();
+									dispatch(setShowAddEventForm(true));
+									dispatch(setDayAddedEvent(day.day));
+									dispatch(setIndexOfTheEventSelectedForEdit(null));
+									dispatch(setShowAddTaskForm(true));
+									dispatch(setDayAddedTask(day.day));
+									dispatch(setIndexOfTheTaskSelectedForEdit(null));
 								}}>
 								<div className={`${isSunday && "sunday"}`}>
 									<div className="flex flex-col">
@@ -131,42 +142,34 @@ function View() {
 										<div className="flex items-center gap-1">
 											{day.hasSpecialEvent && <FcCloseUpMode />}
 											{day.events.length > 0 && (
-												<div className="text-yellow-600">
+												<div
+													className="text-yellow-600 flex gap-1 items-center w-fit font-bold"
+													onClick={(e) => {
+														e.stopPropagation();
+														dispatch(setShowAddEventForm(true));
+														dispatch(setDayAddedEvent(day.day));
+														dispatch(setIndexOfTheEventSelectedForEdit(null));
+													}}>
 													<FaStar />
+													{numberOfEvents}
 												</div>
 											)}
 										</div>
 									</div>
 									<div className="flex justify-between">
-										{isDayEdited ? (
+										{numberOfTasks > 0 && (
 											<div
-												onClick={(e) => {
-													e.stopPropagation();
-												}}
-												className="grid items-center w-fit text-purple-600 hover:text-slate-500">
-												<BiSolidEditAlt />
-											</div>
-										) : (
-											<div
-												className="grid items-center w-fit text-transparent hover:text-slate-500"
+												className="flex gap-1 items-center w-fit text-slate-500"
 												onClick={(e) => {
 													e.stopPropagation();
 													dispatch(setShowAddTaskForm(true));
-													dispatch(setShowAddEventForm(true));
 													dispatch(setDayAddedTask(day.day));
-													dispatch(setDayAddedEvent(day.day));
 													dispatch(setIndexOfTheTaskSelectedForEdit(null));
-													dispatch(setIndexOfTheEventSelectedForEdit(null));
 												}}>
-												<FaPlus />
+												<SiTask />
+												{numberOfTasks}
 											</div>
 										)}
-										<div
-											className={`
-										${day.day && "grid items-center text-red-500 font-bold"} w-fit px-2 py-1
-										`}>
-											{day.day && numberOfTasks > 0 ? numberOfTasks : "\u200b"}
-										</div>
 									</div>
 								</div>
 							</div>
@@ -194,9 +197,28 @@ function View() {
 				</div>
 			)}
 			<br />
-			{isShowAddTaskForm && <CreateTaskForm />}
-			<br />
-			{isShowAddEventForm && <CreateEventForm />}
+			<div className="flex flex-col">
+				<div className="flex">
+					<div
+						className={`${isShowAddTaskForm ? "bg-slate-100" : "bg-white"} px-2`}
+						onClick={() => {
+							dispatch(setShowAddEventForm(false));
+							dispatch(setShowAddTaskForm(true));
+						}}>
+						Task
+					</div>
+					<div
+						className={`${isShowAddEventForm ? "bg-slate-100" : "bg-white"} px-2`}
+						onClick={() => {
+							dispatch(setShowAddEventForm(true));
+							dispatch(setShowAddTaskForm(false));
+						}}>
+						Event
+					</div>
+				</div>
+				{isShowAddTaskForm && <CreateTaskForm />}
+				{isShowAddEventForm && <CreateEventForm />}
+			</div>
 			{(startDate || endDate) && <Table />}
 		</div>
 	);
