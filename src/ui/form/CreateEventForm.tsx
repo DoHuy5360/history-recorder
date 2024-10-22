@@ -12,6 +12,8 @@ import {
 	clearProjectSelected,
 	setUpdateEventFrom,
 	setUpdateEventTo,
+	setEventFrom,
+	setEventTo,
 } from "../redux/reducers/_createEventForm";
 import { addEvent, deleteEvent, updateEvent } from "../redux/reducers/_calendar";
 import { BiSolidEditAlt } from "react-icons/bi";
@@ -21,9 +23,8 @@ import { FaArrowRotateRight } from "react-icons/fa6";
 import { Fragment } from "react/jsx-runtime";
 
 function CreateEventForm() {
-	const { eventValue, dayAddedEvent, isShowAddEventForm, projectsSource, projectsSelected, indexOfTheEventSelectedForEdit, updateEventValue, updateEventFrom, updateEventTo } = useAppSelector(
-		(state) => state.createEventFormReducer,
-	);
+	const { eventValue, eventFrom, eventTo, dayAddedEvent, isShowAddEventForm, projectsSource, projectsSelected, indexOfTheEventSelectedForEdit, updateEventValue, updateEventFrom, updateEventTo } =
+		useAppSelector((state) => state.createEventFormReducer);
 	const { dataTasks, currentMonth, currentYear } = useAppSelector((state) => state.calendarReducer);
 	const dispatch = useAppDispatch();
 	const indexOfTheDaySelectedForAddedEvent = dayAddedEvent && dayAddedEvent - 1;
@@ -64,110 +65,133 @@ function CreateEventForm() {
 					<tbody>
 						{dataTasks?.days[indexOfTheDaySelectedForAddedEvent].events.map((event: EventDay<string>, index) => {
 							const isEditing = indexOfTheEventSelectedForEdit === index;
-							return (
+							return isEditing ? (
 								<tr key={event._id}>
-									<td>{event.from}</td>
-									<td>{event.to}</td>
 									<td>
-										{isEditing ? (
-											<textarea
-												className="resize-none min-h-20 overflow-hidden border-[1px] p-2 w-full"
-												autoFocus={isEditing}
-												onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
-													e.currentTarget.style.height = "5px";
-													e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
-													dispatch(setUpdateEventValue(e.currentTarget.value));
-												}}
-												value={updateEventValue}></textarea>
-										) : (
-											event.name
-										)}
+										<input
+											type="time"
+											value={updateEventFrom}
+											onChange={(e) => {
+												dispatch(setUpdateEventFrom(e.currentTarget.value));
+											}}
+										/>
+									</td>
+									<td>
+										<input
+											type="time"
+											value={updateEventTo}
+											onChange={(e) => {
+												dispatch(setUpdateEventTo(e.currentTarget.value));
+											}}
+										/>
+									</td>
+									<td>
+										<textarea
+											className="resize-none min-h-20 overflow-hidden border-[1px] p-2 w-full"
+											autoFocus={isEditing}
+											onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
+												e.currentTarget.style.height = "5px";
+												e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+												dispatch(setUpdateEventValue(e.currentTarget.value));
+											}}
+											value={updateEventValue}></textarea>
 									</td>
 									<td>{event.status}</td>
 									<td>
 										{event.createdAtDay} - {event.createdAtTime}
 									</td>
 									<td>
-										<div className="flex gap-1 items-center justify-center">
-											{isEditing ? (
-												<div className="flex gap-1 items-center">
-													<div
-														className="text-red-600 p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500 cursor-pointer"
-														onClick={() => {
-															dispatch(setIndexOfTheEventSelectedForEdit(null));
-															dispatch(setUpdateEventValue(""));
-														}}>
-														<div className="rotate-45">
-															<FaPlus />
-														</div>
-													</div>
+										<div className="flex gap-1 items-center">
+											<div
+												className="text-red-600 p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500 cursor-pointer"
+												onClick={() => {
+													dispatch(setIndexOfTheEventSelectedForEdit(null));
+													dispatch(setUpdateEventValue(""));
+												}}>
+												<div className="rotate-45">
+													<FaPlus />
+												</div>
+											</div>
 
-													{updateEventValue !== event.name && (
-														<Fragment>
-															<div
-																className="text-yellow-600 p-1 rounded-sm cursor-pointer hover:outline-1 outline-0 outline outline-slate-500"
-																onClick={() => {
-																	dispatch(setUpdateEventValue(event.name));
-																}}>
-																<FaArrowRotateRight />
-															</div>
-															<div
-																className="w-fit p-1 rounded-sm text-green-600 cursor-pointer hover:outline-1 outline-0 outline outline-slate-500"
-																onClick={async () => {
-																	const record = {
-																		...event,
-																		name: updateEventValue,
-																	};
-																	// @ts-ignore
-																	const { acknowledged } = await window.calendarEvent.update({
-																		_id: event._id,
-																		record,
-																	});
-																	if (acknowledged) {
-																		dispatch(
-																			updateEvent({
-																				indexOfTheDaySelectedForUpdatedEvent: indexOfTheDaySelectedForAddedEvent,
-																				eventIndex: index,
-																				record,
-																			}),
-																		);
-																		dispatch(setUpdateEventValue(""));
-																		dispatch(setIndexOfTheEventSelectedForEdit(null));
-																	}
-																}}>
-																<FaSave />
-															</div>
-														</Fragment>
-													)}
+											{updateEventValue !== event.name && (
+												<Fragment>
 													<div
+														className="text-yellow-600 p-1 rounded-sm cursor-pointer hover:outline-1 outline-0 outline outline-slate-500"
+														onClick={() => {
+															dispatch(setUpdateEventValue(event.name));
+														}}>
+														<FaArrowRotateRight />
+													</div>
+													<div
+														className="w-fit p-1 rounded-sm text-green-600 cursor-pointer hover:outline-1 outline-0 outline outline-slate-500"
 														onClick={async () => {
+															const record = {
+																...event,
+																name: updateEventValue,
+																from: updateEventFrom,
+																to: updateEventTo,
+															};
 															// @ts-ignore
-															const { acknowledged } = await window.calendarEvent.delete({
+															const { acknowledged } = await window.calendarEvent.update({
 																_id: event._id,
+																record,
 															});
 															if (acknowledged) {
 																dispatch(
-																	deleteEvent({
-																		indexOfTheDaySelectedFordeletedEvent: indexOfTheDaySelectedForAddedEvent,
+																	updateEvent({
+																		indexOfTheDaySelectedForUpdatedEvent: indexOfTheDaySelectedForAddedEvent,
 																		eventIndex: index,
+																		record,
 																	}),
 																);
+																dispatch(setUpdateEventValue(""));
+																dispatch(setIndexOfTheEventSelectedForEdit(null));
 															}
-														}}
-														className="text-red-600 cursor-pointer p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
-														<MdDelete />
+														}}>
+														<FaSave />
 													</div>
-												</div>
-											) : (
-												<div
-													onClick={() => {
-														dispatch(setUpdateEventValue(event.name));
-														dispatch(setIndexOfTheEventSelectedForEdit(index));
-													}}
-													className="text-purple-600 cursor-pointer p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
-													<BiSolidEditAlt />
-												</div>
+												</Fragment>
 											)}
+											<div
+												onClick={async () => {
+													// @ts-ignore
+													const { acknowledged } = await window.calendarEvent.delete({
+														_id: event._id,
+													});
+													if (acknowledged) {
+														dispatch(
+															deleteEvent({
+																indexOfTheDaySelectedFordeletedEvent: indexOfTheDaySelectedForAddedEvent,
+																eventIndex: index,
+															}),
+														);
+													}
+												}}
+												className="text-red-600 cursor-pointer p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
+												<MdDelete />
+											</div>
+										</div>
+									</td>
+								</tr>
+							) : (
+								<tr key={event._id}>
+									<td>{event.from}</td>
+									<td>{event.to}</td>
+									<td>{event.name}</td>
+									<td>{event.status}</td>
+									<td>
+										{event.createdAtDay} - {event.createdAtTime}
+									</td>
+									<td>
+										<div className="flex gap-1 items-center justify-center">
+											<div
+												onClick={() => {
+													dispatch(setUpdateEventValue(event.name));
+													dispatch(setIndexOfTheEventSelectedForEdit(index));
+												}}
+												className="text-purple-600 cursor-pointer p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500">
+												<BiSolidEditAlt />
+											</div>
 										</div>
 									</td>
 								</tr>
@@ -180,9 +204,9 @@ function CreateEventForm() {
 								<div className="flex gap-1 items-center">
 									<input
 										type="time"
-										value={updateEventFrom}
+										value={eventFrom}
 										onChange={(e) => {
-											dispatch(setUpdateEventFrom(e.currentTarget.value));
+											dispatch(setEventFrom(e.currentTarget.value));
 										}}
 									/>
 								</div>
@@ -191,9 +215,9 @@ function CreateEventForm() {
 								<div className="flex gap-1 items-center">
 									<input
 										type="time"
-										value={updateEventTo}
+										value={eventTo}
 										onChange={(e) => {
-											dispatch(setUpdateEventTo(e.currentTarget.value));
+											dispatch(setEventTo(e.currentTarget.value));
 										}}
 									/>
 								</div>

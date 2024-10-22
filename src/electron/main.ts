@@ -119,9 +119,9 @@ app.on("ready", async () => {
 			{ "months.days.events._id": ObjectId.createFromHexString(data._id) },
 			{
 				$set: {
-					// [`months.$[].days.$[].events.$[].project`]: "<New Project Name>",
+					[`months.$[].days.$[].events.$[event].from`]: data.record.from,
+					[`months.$[].days.$[].events.$[event].to`]: data.record.to,
 					[`months.$[].days.$[].events.$[event].name`]: data.record.name,
-					// [`months.$[].days.$[].events.$[].status`]: "<New Status>",
 					// [`months.$[].days.$[].events.$[].createdAt`]: "<New Time>",
 				},
 			},
