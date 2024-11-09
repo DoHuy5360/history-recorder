@@ -22,21 +22,21 @@ function getNumberOfEmptyCellsBeforeFirstDayOfTheMonth(firstDayAsWeek: number) {
 	return firstDayAsWeek === 0 ? 6 : firstDayAsWeek - 1;
 }
 function getNumberOfEmptyCellsAfterLastDayOfTheMonth(daysInMonth: number, numberOfEmptyCellsBeforeFirstDayOfTheMonth: number) {
-	return 42 - daysInMonth - numberOfEmptyCellsBeforeFirstDayOfTheMonth;
+	return (numberOfEmptyCellsBeforeFirstDayOfTheMonth == 6 ? 42 : 35) - daysInMonth - numberOfEmptyCellsBeforeFirstDayOfTheMonth;
 }
 const thisMoment = moment();
 const currentMonthName = thisMoment.format("MMMM");
-const currentMonth = thisMoment.month() + 1;
+export const currentActualMonth = thisMoment.month() + 1;
 const currentDay = thisMoment.date();
 const daysInMonth = thisMoment.daysInMonth();
 const currentYear = thisMoment.year();
-const firstDateInMonth = getFirstDateInMonth(currentYear, currentMonth);
+const firstDateInMonth = getFirstDateInMonth(currentYear, currentActualMonth);
 const firstDayAsWeek = firstDateInMonth.day();
 const numberOfEmptyCellsBeforeFirstDayOfTheMonth = getNumberOfEmptyCellsBeforeFirstDayOfTheMonth(firstDayAsWeek);
 const numberOfEmptyCellsAfterLastDayOfTheMonth = getNumberOfEmptyCellsAfterLastDayOfTheMonth(daysInMonth, numberOfEmptyCellsBeforeFirstDayOfTheMonth);
 
 const initialState: CalendarState = {
-	currentMonth,
+	currentMonth: currentActualMonth,
 	currentDay,
 	currentYear,
 	daysInMonth,
@@ -57,6 +57,8 @@ export const slice = createSlice({
 			state.daysInMonth = moment(`${state.currentYear}-${addZeroFormat(state.currentMonth)}`).daysInMonth();
 			state.numberOfEmptyCellsBeforeFirstDayOfTheMonth = getNumberOfEmptyCellsBeforeFirstDayOfTheMonth(getFirstDateInMonth(state.currentYear, state.currentMonth).day());
 			state.numberOfEmptyCellsAfterLastDayOfTheMonth = getNumberOfEmptyCellsAfterLastDayOfTheMonth(state.daysInMonth, state.numberOfEmptyCellsBeforeFirstDayOfTheMonth);
+			state.startDate = null;
+			state.endDate = null;
 		},
 		setDataTasks: (state, action: PayloadAction<Month<string>>) => {
 			state.dataTasks = action.payload;

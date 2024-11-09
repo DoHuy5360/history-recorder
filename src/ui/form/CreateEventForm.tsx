@@ -104,7 +104,7 @@ function CreateEventForm() {
 										{event.createdAtDay} - {event.createdAtTime}
 									</td>
 									<td>
-										<div className="flex gap-1 items-center">
+										<div className="flex gap-1 items-center justify-center">
 											<div
 												className="text-red-600 p-1 rounded-sm hover:outline-1 outline-0 outline outline-slate-500 cursor-pointer"
 												onClick={() => {
@@ -116,7 +116,7 @@ function CreateEventForm() {
 												</div>
 											</div>
 
-											{isEditing && (
+											{isEditing && updateEventValue !== event.name && (
 												<Fragment>
 													<div
 														className="text-yellow-600 p-1 rounded-sm cursor-pointer hover:outline-1 outline-0 outline outline-slate-500"

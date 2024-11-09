@@ -5,14 +5,11 @@ table, th, td{
 th, td{
     padding: 5px 10px;
 }
-.cell_month_name{
-    grid-column: 1 / -1;
-}
 .sunday{
     background-image: linear-gradient(150deg, #F2CBCC 11.54%, transparent 11.54%, transparent 50%, #F2CBCC 50%, #F2CBCC 61.54%, transparent 61.54%, transparent 100%);
-background-size: 65.00px 37.53px;
+background-size: 65px 37px;
 }
 .empty{
     background-image: linear-gradient(150deg, #F1F5F9 11.54%, transparent 11.54%, transparent 50%, #F1F5F9 50%, #F1F5F9 61.54%, transparent 61.54%, transparent 100%);
-background-size: 65.00px 37.53px;
+background-size: 65px 37px;
 }
