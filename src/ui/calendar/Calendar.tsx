@@ -61,6 +61,7 @@ function View() {
 		},
 		[startDate, endDate],
 	);
+	console.log(numberOfEmptyCellsBeforeFirstDayOfTheMonth);
 	return (
 		<div className="p-3">
 			<Navigate />
@@ -100,10 +101,12 @@ function View() {
 						const isEndDay = endDate === day.day;
 						const isDaysBetweenStartAndEnd = startDate && endDate && day.day > startDate && day.day < endDate;
 						const isDayEdited = isShowAddTaskForm && dayAddedTask === day.day;
+
 						return (
-							<div
-								key={index}
-								className={`${isToday && ""}
+							!Number.isNaN(dayInWeek) && (
+								<div
+									key={index}
+									className={`${isToday && ""}
 							${
 								isDaysBetweenStartAndEnd ? `bg-yellow-100` : day.day !== startDate && day.day !== endDate && "bg-white"
 							} h-full p-2 select-non outline outline-0 outline-slate-400 hover:outline-1 cursor-pointer transition-colors ease-in-out duration-100
@@ -111,65 +114,66 @@ function View() {
 							${isEndDay && "bg-blue-100"}
 							${isDayEdited && "outline-2 outline-dashed outline-purple-1 z-10"}
 							`}
-								style={{
-									gridColumn: dayInWeek,
-									transitionDelay: isStartDay || isEndDay ? "0ms" : `${day.day}0ms`,
-								}}
-								onClick={() => {
-									handleSelectDays(day.day);
-								}}>
-								<div className={`${isSunday && "sunday"}`}>
-									<div className="flex flex-col">
-										<div className="flex justify-between items-center">
-											<div>{day.day}</div>
-											{isToday && (
-												<div className="text-red-500 h-fit">
-													<BiSolidFlag />
+									style={{
+										gridColumn: dayInWeek,
+										transitionDelay: isStartDay || isEndDay ? "0ms" : `${day.day}0ms`,
+									}}
+									onClick={() => {
+										handleSelectDays(day.day);
+									}}>
+									<div className={`${isSunday && "sunday"}`}>
+										<div className="flex flex-col">
+											<div className="flex justify-between items-center">
+												<div>{day.day}</div>
+												{isToday && (
+													<div className="text-red-500 h-fit">
+														<BiSolidFlag />
+													</div>
+												)}
+											</div>
+											<div className="flex items-center gap-1">
+												{day.hasSpecialEvent && <FcCloseUpMode />}
+												{day.events.length > 0 && (
+													<div className="text-yellow-600">
+														<FaStar />
+													</div>
+												)}
+											</div>
+										</div>
+										<div className="flex justify-between">
+											{isDayEdited ? (
+												<div
+													onClick={(e) => {
+														e.stopPropagation();
+													}}
+													className="grid items-center w-fit text-purple-600 hover:text-slate-500">
+													<BiSolidEditAlt />
+												</div>
+											) : (
+												<div
+													className="grid items-center w-fit text-transparent hover:text-slate-500"
+													onClick={(e) => {
+														e.stopPropagation();
+														dispatch(setShowAddTaskForm(true));
+														dispatch(setShowAddEventForm(true));
+														dispatch(setDayAddedTask(day.day));
+														dispatch(setDayAddedEvent(day.day));
+														dispatch(setIndexOfTheTaskSelectedForEdit(null));
+														dispatch(setIndexOfTheEventSelectedForEdit(null));
+													}}>
+													<FaPlus />
 												</div>
 											)}
-										</div>
-										<div className="flex items-center gap-1">
-											{day.hasSpecialEvent && <FcCloseUpMode />}
-											{day.events.length > 0 && (
-												<div className="text-yellow-600">
-													<FaStar />
-												</div>
-											)}
-										</div>
-									</div>
-									<div className="flex justify-between">
-										{isDayEdited ? (
 											<div
-												onClick={(e) => {
-													e.stopPropagation();
-												}}
-												className="grid items-center w-fit text-purple-600 hover:text-slate-500">
-												<BiSolidEditAlt />
-											</div>
-										) : (
-											<div
-												className="grid items-center w-fit text-transparent hover:text-slate-500"
-												onClick={(e) => {
-													e.stopPropagation();
-													dispatch(setShowAddTaskForm(true));
-													dispatch(setShowAddEventForm(true));
-													dispatch(setDayAddedTask(day.day));
-													dispatch(setDayAddedEvent(day.day));
-													dispatch(setIndexOfTheTaskSelectedForEdit(null));
-													dispatch(setIndexOfTheEventSelectedForEdit(null));
-												}}>
-												<FaPlus />
-											</div>
-										)}
-										<div
-											className={`
+												className={`
 										${day.day && "grid items-center text-red-500 font-bold"} w-fit px-2 py-1
 										`}>
-											{day.day && numberOfTasks > 0 ? numberOfTasks : "\u200b"}
+												{day.day && numberOfTasks > 0 ? numberOfTasks : "\u200b"}
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
+							)
 						);
 					})}
 
