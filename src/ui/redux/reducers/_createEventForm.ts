@@ -4,16 +4,22 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 interface CreateEventFormState {
 	isShowAddEventForm: boolean;
 	eventValue: string;
+	eventFrom: string;
+	eventTo: string;
 	dayAddedEvent: null | number;
 	projectsSource: Project[];
 	projectsSelected: Project[];
 	indexOfTheEventSelectedForEdit: null | number;
 	updateEventValue: string;
+	updateEventFrom: string;
+	updateEventTo: string;
 }
 
 const initialState: CreateEventFormState = {
 	isShowAddEventForm: false,
 	eventValue: "",
+	eventFrom: "",
+	eventTo: "",
 	dayAddedEvent: null,
 	projectsSource: [
 		{ _id: "0", name: "Other" },
@@ -27,6 +33,8 @@ const initialState: CreateEventFormState = {
 	projectsSelected: [],
 	indexOfTheEventSelectedForEdit: null,
 	updateEventValue: "",
+	updateEventFrom: "",
+	updateEventTo: "",
 };
 
 export const slice = createSlice({
@@ -35,6 +43,12 @@ export const slice = createSlice({
 	reducers: {
 		setEventValue: (state, action: PayloadAction<string>) => {
 			state.eventValue = action.payload;
+		},
+		setEventFrom: (state, action: PayloadAction<string>) => {
+			state.eventFrom = action.payload;
+		},
+		setEventTo: (state, action: PayloadAction<string>) => {
+			state.eventTo = action.payload;
 		},
 		setUpdateEventValue: (state, action: PayloadAction<string>) => {
 			state.updateEventValue = action.payload;
@@ -63,6 +77,12 @@ export const slice = createSlice({
 		setIndexOfTheEventSelectedForEdit: (state, action: PayloadAction<number | null>) => {
 			state.indexOfTheEventSelectedForEdit = action.payload;
 		},
+		setUpdateEventFrom: (state, action: PayloadAction<string>) => {
+			state.updateEventFrom = action.payload;
+		},
+		setUpdateEventTo: (state, action: PayloadAction<string>) => {
+			state.updateEventTo = action.payload;
+		},
 	},
 });
 
@@ -77,6 +97,10 @@ export const {
 	setIndexOfTheEventSelectedForEdit,
 	setUpdateEventValue,
 	clearProjectSelected,
+	setUpdateEventFrom,
+	setUpdateEventTo,
+	setEventFrom,
+	setEventTo,
 } = slice.actions;
 
 export default slice.reducer;

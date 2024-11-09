@@ -177,7 +177,16 @@ function CreateTaskForm() {
 								</div>
 							</td>
 							<td className="max-w-40">{projectsSelectedString}</td>
-							<td>{taskValue}</td>
+							<td>
+								<textarea
+									className="resize-none overflow-hidden border-[1px] p-2 w-full"
+									value={taskValue}
+									onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
+										e.currentTarget.style.height = "5px";
+										e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
+										dispatch(setTaskValue(e.currentTarget.value));
+									}}></textarea>
+							</td>
 							<td>
 								<div className="flex justify-center">
 									{taskValue && projectsSelectedString && (
@@ -261,14 +270,6 @@ function CreateTaskForm() {
 						</div>
 					)}
 				</div>
-				<textarea
-					className="resize-none min-h-20 overflow-hidden border-[1px] p-2"
-					onInput={(e: React.FormEvent<HTMLTextAreaElement>) => {
-						e.currentTarget.style.height = "5px";
-						e.currentTarget.style.height = e.currentTarget.scrollHeight + "px";
-						dispatch(setTaskValue(e.currentTarget.value));
-					}}
-					value={taskValue}></textarea>
 			</div>
 		)
 	);

@@ -15,6 +15,7 @@ import RangeOfEmptyDay from "./RangeOfEmptyDay";
 import Navigate from "./Navigate";
 import CreateEventForm from "../form/CreateEventForm";
 import { setDayAddedEvent, setIndexOfTheEventSelectedForEdit, setShowAddEventForm } from "../redux/reducers/_createEventForm";
+import { SiTask } from "react-icons/si";
 
 function View() {
 	const { isShowAddTaskForm, dayAddedTask } = useAppSelector((state) => state.createTaskFormReducer);
@@ -61,7 +62,6 @@ function View() {
 		},
 		[startDate, endDate],
 	);
-	console.log(numberOfEmptyCellsBeforeFirstDayOfTheMonth);
 	return (
 		<div className="p-3">
 			<Navigate />
@@ -79,7 +79,7 @@ function View() {
 					<div>{currentYear}</div>
 				</div>
 			</div>
-			<div className="grid grid-cols-7 gap-[1px] bg-slate-100 border-slate-100 border-[1px]">
+			<div className="grid grid-cols-7 gap-[1px] bg-slate-100 border-slate-100 border-[1px] select-none">
 				<div className="p-2 cell_month_name">{currentMonthName}</div>
 				<div className="p-2 bg-slate-50">T2</div>
 				<div className="p-2 bg-slate-50">T3</div>
@@ -97,6 +97,7 @@ function View() {
 						const isToday = day.day === currentDay;
 						const isSunday = dayInWeek === 0;
 						const numberOfTasks = day.tasks.length;
+						const numberOfEvents = day.events.length;
 						const isStartDay = startDate === day.day;
 						const isEndDay = endDate === day.day;
 						const isDaysBetweenStartAndEnd = startDate && endDate && day.day > startDate && day.day < endDate;
@@ -108,7 +109,7 @@ function View() {
 									key={index}
 									className={`${isToday && ""}
 							${
-								isDaysBetweenStartAndEnd ? `bg-yellow-100` : day.day !== startDate && day.day !== endDate && "bg-white"
+								isDaysBetweenStartAndEnd ? "bg-yellow-100" : day.day !== startDate && day.day !== endDate && "bg-white"
 							} h-full p-2 select-non outline outline-0 outline-slate-400 hover:outline-1 cursor-pointer transition-colors ease-in-out duration-100
 							${isStartDay && "bg-green-100"}
 							${isEndDay && "bg-blue-100"}
@@ -118,8 +119,17 @@ function View() {
 										gridColumn: dayInWeek,
 										transitionDelay: isStartDay || isEndDay ? "0ms" : `${day.day}0ms`,
 									}}
-									onClick={() => {
+									onContextMenu={() => {
 										handleSelectDays(day.day);
+									}}
+									onClick={(e) => {
+										e.stopPropagation();
+										dispatch(setShowAddEventForm(true));
+										dispatch(setDayAddedEvent(day.day));
+										dispatch(setIndexOfTheEventSelectedForEdit(null));
+										dispatch(setShowAddTaskForm(true));
+										dispatch(setDayAddedTask(day.day));
+										dispatch(setIndexOfTheTaskSelectedForEdit(null));
 									}}>
 									<div className={`${isSunday && "sunday"}`}>
 										<div className="flex flex-col">
@@ -134,73 +144,85 @@ function View() {
 											<div className="flex items-center gap-1">
 												{day.hasSpecialEvent && <FcCloseUpMode />}
 												{day.events.length > 0 && (
-													<div className="text-yellow-600">
+													<div
+														className="text-yellow-600 flex gap-1 items-center w-fit font-bold"
+														onClick={(e) => {
+															e.stopPropagation();
+															dispatch(setShowAddEventForm(true));
+															dispatch(setDayAddedEvent(day.day));
+															dispatch(setIndexOfTheEventSelectedForEdit(null));
+														}}>
 														<FaStar />
+														{numberOfEvents}
 													</div>
 												)}
 											</div>
 										</div>
 										<div className="flex justify-between">
-											{isDayEdited ? (
+											{numberOfTasks > 0 && (
 												<div
-													onClick={(e) => {
-														e.stopPropagation();
-													}}
-													className="grid items-center w-fit text-purple-600 hover:text-slate-500">
-													<BiSolidEditAlt />
-												</div>
-											) : (
-												<div
-													className="grid items-center w-fit text-transparent hover:text-slate-500"
+													className="flex gap-1 items-center w-fit text-slate-500"
 													onClick={(e) => {
 														e.stopPropagation();
 														dispatch(setShowAddTaskForm(true));
-														dispatch(setShowAddEventForm(true));
 														dispatch(setDayAddedTask(day.day));
-														dispatch(setDayAddedEvent(day.day));
 														dispatch(setIndexOfTheTaskSelectedForEdit(null));
-														dispatch(setIndexOfTheEventSelectedForEdit(null));
 													}}>
-													<FaPlus />
+													<SiTask />
+													{numberOfTasks}
 												</div>
 											)}
-											<div
-												className={`
-										${day.day && "grid items-center text-red-500 font-bold"} w-fit px-2 py-1
-										`}>
-												{day.day && numberOfTasks > 0 ? numberOfTasks : "\u200b"}
-											</div>
 										</div>
 									</div>
 								</div>
 							)
 						);
 					})}
+				{(startDate || endDate) && (
+					<div className="flex">
+						<div className="flex">
+							<label htmlFor="">From</label>
+							<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${startDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
+						</div>
+						{endDate && (
+							<div className="flex">
+								<label htmlFor="">To</label>
+								<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${endDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
+							</div>
+						)}
+						<div>
+							{Math.abs((startDate ? startDate - 1 : endDate ? endDate - 1 : 0) - (endDate ? endDate : startDate ? startDate : 0))}
+							&#160;day(s) selected
+						</div>
+					</div>
+				)}
 
 				<RangeOfEmptyDay number={numberOfEmptyCellsAfterLastDayOfTheMonth} />
 			</div>
-			{(startDate || endDate) && (
+
+			<br />
+			<div className="flex flex-col">
 				<div className="flex">
-					<div className="flex">
-						<label htmlFor="">From</label>
-						<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${startDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
+					<div
+						className={`${isShowAddTaskForm ? "bg-slate-100" : "bg-white"} px-2`}
+						onClick={() => {
+							dispatch(setShowAddEventForm(false));
+							dispatch(setShowAddTaskForm(true));
+						}}>
+						Task
 					</div>
-					{endDate && (
-						<div className="flex">
-							<label htmlFor="">To</label>
-							<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${endDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
-						</div>
-					)}
-					<div>
-						{Math.abs((startDate ? startDate - 1 : endDate ? endDate - 1 : 0) - (endDate ? endDate : startDate ? startDate : 0))}
-						&#160;day(s) selected
+					<div
+						className={`${isShowAddEventForm ? "bg-slate-100" : "bg-white"} px-2`}
+						onClick={() => {
+							dispatch(setShowAddEventForm(true));
+							dispatch(setShowAddTaskForm(false));
+						}}>
+						Event
 					</div>
 				</div>
-			)}
-			<br />
-			{isShowAddTaskForm && <CreateTaskForm />}
-			<br />
-			{isShowAddEventForm && <CreateEventForm />}
+				{isShowAddTaskForm && <CreateTaskForm />}
+				{isShowAddEventForm && <CreateEventForm />}
+			</div>
 			{(startDate || endDate) && <Table />}
 		</div>
 	);
