@@ -8,7 +8,7 @@ import { FcCloseUpMode } from "react-icons/fc";
 import Table from "../table/Table";
 
 import { setDayAddedTask, setIndexOfTheTaskSelectedForEdit, setShowAddTaskForm } from "../redux/reducers/_createTaskForm";
-import { setDataTasks, setStartDate, setEndDate } from "../redux/reducers/_calendar";
+import { setDataTasks, setStartDate, setEndDate, setCurrentMonth } from "../redux/reducers/_calendar";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import CreateTaskForm from "../form/CreateTaskForm";
 import RangeOfEmptyDay from "./RangeOfEmptyDay";
@@ -16,6 +16,7 @@ import Navigate from "./Navigate";
 import CreateEventForm from "../form/CreateEventForm";
 import { setDayAddedEvent, setIndexOfTheEventSelectedForEdit, setShowAddEventForm } from "../redux/reducers/_createEventForm";
 import { SiTask } from "react-icons/si";
+import { addZeroFormat } from "../utils";
 
 function View() {
 	const { isShowAddTaskForm, dayAddedTask } = useAppSelector((state) => state.createTaskFormReducer);
@@ -30,7 +31,7 @@ function View() {
 			dispatch(setDataTasks(data.data));
 		}
 		readCalendar();
-	}, []);
+	}, [currentMonth]);
 	const handleSelectDays = useCallback(
 		(selectedDay: number) => {
 			if (startDate === selectedDay) {
@@ -72,7 +73,15 @@ function View() {
 				</div>
 				<div className="flex gap-1">
 					<div>Month: </div>
-					<div>{currentMonth}</div>
+					<select
+						onChange={(e) => {
+							dispatch(setCurrentMonth(e.target.value as unknown as number));
+						}}
+						defaultValue={currentMonth}>
+						{Array.from({ length: 12 }, (_, index) => (
+							<option key={index}>{index + 1}</option>
+						))}
+					</select>
 				</div>
 				<div className="flex gap-1">
 					<div>Year: </div>
@@ -91,7 +100,7 @@ function View() {
 				<RangeOfEmptyDay number={numberOfEmptyCellsBeforeFirstDayOfTheMonth} />
 				{dataTasks &&
 					dataTasks.days.map((day: Day<string>, index) => {
-						const date = moment(`${currentYear}-${currentMonth}-${day.day < 10 ? `0${day.day}` : day.day}`);
+						const date = moment(`${currentYear}-${addZeroFormat(currentMonth)}-${addZeroFormat(day.day)}`);
 						const dayInWeek = date.day();
 
 						const isToday = day.day === currentDay;
@@ -102,7 +111,6 @@ function View() {
 						const isEndDay = endDate === day.day;
 						const isDaysBetweenStartAndEnd = startDate && endDate && day.day > startDate && day.day < endDate;
 						const isDayEdited = isShowAddTaskForm && dayAddedTask === day.day;
-
 						return (
 							!Number.isNaN(dayInWeek) && (
 								<div
@@ -116,7 +124,7 @@ function View() {
 							${isDayEdited && "outline-2 outline-dashed outline-purple-1 z-10"}
 							`}
 									style={{
-										gridColumn: dayInWeek,
+										gridColumn: isSunday ? 7 : dayInWeek,
 										transitionDelay: isStartDay || isEndDay ? "0ms" : `${day.day}0ms`,
 									}}
 									onContextMenu={() => {
@@ -178,27 +186,27 @@ function View() {
 							)
 						);
 					})}
-				{(startDate || endDate) && (
-					<div className="flex">
-						<div className="flex">
-							<label htmlFor="">From</label>
-							<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${startDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
-						</div>
-						{endDate && (
-							<div className="flex">
-								<label htmlFor="">To</label>
-								<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${endDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
-							</div>
-						)}
-						<div>
-							{Math.abs((startDate ? startDate - 1 : endDate ? endDate - 1 : 0) - (endDate ? endDate : startDate ? startDate : 0))}
-							&#160;day(s) selected
-						</div>
-					</div>
-				)}
 
 				<RangeOfEmptyDay number={numberOfEmptyCellsAfterLastDayOfTheMonth} />
 			</div>
+			{(startDate || endDate) && (
+				<div className="flex">
+					<div className="flex">
+						<label htmlFor="">From</label>
+						<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${startDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
+					</div>
+					{endDate && (
+						<div className="flex">
+							<label htmlFor="">To</label>
+							<input type="date" value={`${moment(`${currentYear}-${currentMonth}-${endDate}`, "YYYY-M-DD").format("YYYY-MM-DD")}`} readOnly />
+						</div>
+					)}
+					<div>
+						{Math.abs((startDate ? startDate - 1 : endDate ? endDate - 1 : 0) - (endDate ? endDate : startDate ? startDate : 0))}
+						&#160;day(s) selected
+					</div>
+				</div>
+			)}
 
 			<br />
 			<div className="flex flex-col">

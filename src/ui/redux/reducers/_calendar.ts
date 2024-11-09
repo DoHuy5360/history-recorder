@@ -1,11 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import moment from "moment";
+import { addZeroFormat } from "../../utils";
 
 interface CalendarState {
 	currentMonth: number;
 	currentDay: number;
 	currentYear: number;
+	daysInMonth: number;
 	dataTasks: null | Month<string>;
 	startDate: null | number;
 	endDate: null | number;
@@ -13,21 +15,31 @@ interface CalendarState {
 	numberOfEmptyCellsBeforeFirstDayOfTheMonth: number;
 	numberOfEmptyCellsAfterLastDayOfTheMonth: number;
 }
+function getFirstDateInMonth(year: number, month: number) {
+	return moment(`${year}-${addZeroFormat(month)}-01`);
+}
+function getNumberOfEmptyCellsBeforeFirstDayOfTheMonth(firstDayAsWeek: number) {
+	return firstDayAsWeek === 0 ? 6 : firstDayAsWeek - 1;
+}
+function getNumberOfEmptyCellsAfterLastDayOfTheMonth(daysInMonth: number, numberOfEmptyCellsBeforeFirstDayOfTheMonth: number) {
+	return 42 - daysInMonth - numberOfEmptyCellsBeforeFirstDayOfTheMonth;
+}
 const thisMoment = moment();
 const currentMonthName = thisMoment.format("MMMM");
 const currentMonth = thisMoment.month() + 1;
 const currentDay = thisMoment.date();
 const daysInMonth = thisMoment.daysInMonth();
 const currentYear = thisMoment.year();
-const firstDateInMonth = moment(`${currentYear}-${currentMonth}-01`);
-const firstDayInWeek = firstDateInMonth.day();
-const numberOfEmptyCellsBeforeFirstDayOfTheMonth = firstDayInWeek === 0 ? 6 : firstDayInWeek - 1;
-const numberOfEmptyCellsAfterLastDayOfTheMonth = 35 - daysInMonth - numberOfEmptyCellsBeforeFirstDayOfTheMonth;
+const firstDateInMonth = getFirstDateInMonth(currentYear, currentMonth);
+const firstDayAsWeek = firstDateInMonth.day();
+const numberOfEmptyCellsBeforeFirstDayOfTheMonth = getNumberOfEmptyCellsBeforeFirstDayOfTheMonth(firstDayAsWeek);
+const numberOfEmptyCellsAfterLastDayOfTheMonth = getNumberOfEmptyCellsAfterLastDayOfTheMonth(daysInMonth, numberOfEmptyCellsBeforeFirstDayOfTheMonth);
 
 const initialState: CalendarState = {
 	currentMonth,
 	currentDay,
 	currentYear,
+	daysInMonth,
 	currentMonthName,
 	dataTasks: null,
 	startDate: null,
@@ -40,6 +52,12 @@ export const slice = createSlice({
 	name: "CalendarState",
 	initialState,
 	reducers: {
+		setCurrentMonth: (state, action: PayloadAction<number>) => {
+			state.currentMonth = action.payload;
+			state.daysInMonth = moment(`${state.currentYear}-${addZeroFormat(state.currentMonth)}`).daysInMonth();
+			state.numberOfEmptyCellsBeforeFirstDayOfTheMonth = getNumberOfEmptyCellsBeforeFirstDayOfTheMonth(getFirstDateInMonth(state.currentYear, state.currentMonth).day());
+			state.numberOfEmptyCellsAfterLastDayOfTheMonth = getNumberOfEmptyCellsAfterLastDayOfTheMonth(state.daysInMonth, state.numberOfEmptyCellsBeforeFirstDayOfTheMonth);
+		},
 		setDataTasks: (state, action: PayloadAction<Month<string>>) => {
 			state.dataTasks = action.payload;
 		},
@@ -108,6 +126,6 @@ export const slice = createSlice({
 	},
 });
 
-export const { setDataTasks, setStartDate, setEndDate, addTask, deleteTask, updateTask, addEvent, updateEvent, deleteEvent } = slice.actions;
+export const { setCurrentMonth, setDataTasks, setStartDate, setEndDate, addTask, deleteTask, updateTask, addEvent, updateEvent, deleteEvent } = slice.actions;
 
 export default slice.reducer;
